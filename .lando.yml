@@ -1,0 +1,107 @@
+name: drupal-project
+recipe: drupal9
+
+config:
+  php: "7.4"
+  via: nginx
+  webroot: web
+  database: "mariadb:10.3"
+  xdebug: off
+  config:
+    php: .lando/php.ini
+
+tooling:
+  grumphp:
+    description: "Runs grumphp commands"
+    cmd:
+      - appserver: ./vendor/bin/grumphp
+  npm:
+    description: "Runs npm commands"
+    service: node
+  phpunit:
+    description: Runs PHPUnit commands
+    user: www-data
+    cmd:
+      - appserver: "php /app/vendor/bin/phpunit -c /app/phpunit.xml --testdox"
+  regenerate-phpunit-config:
+    description: "Regenerates fresh PHPUnit configuration."
+    cmd:
+      - appserver: /app/.lando/phpunit.sh
+  xdebug:
+    description: "Loads Xdebug in the selected mode"
+    cmd:
+      - appserver: /app/.lando/xdebug.sh
+    user: root
+
+services:
+  database:
+    # User random static high port for database connection.
+    portforward: 34567
+  appserver:
+    # Install dependencies when building lando.
+    build:
+      - "composer install"
+    overrides:
+      environment:
+        HASH_SALT: notsosecurehash
+        ENVIRONMENT_NAME: lando
+        DB_NAME_DRUPAL: drupal9
+        DB_USER_DRUPAL: drupal9
+        DB_PASS_DRUPAL: drupal9
+        DB_HOST_DRUPAL: database
+        DRUSH_OPTIONS_URI: https://drupal-project.lndo.site
+        # Support debugging with XDEBUG 3.
+        XDEBUG_MODE:
+        PHP_IDE_CONFIG: serverName=appserver
+        # PHPUnit settings. @see: .lando/phpunit.sh
+        MINK_DRIVER_ARGS_WEBDRIVER: '["chrome", {"browserName":"chrome","chromeOptions":{"args":["--disable-gpu","--headless"]}}, "http://chrome:9515"]'
+  chrome:
+    type: compose
+    services:
+      image: drupalci/webdriver-chromedriver:production
+      command: chromedriver --log-path=/tmp/chromedriver.log --verbose --whitelisted-ips=
+  # elasticsearch:
+  #   type: "elasticsearch:7.12.0"
+  #   # Replace `true` with `9200` for proxy http://localhost:9200.
+  #   portforward: true
+  #   overrides:
+  #     environment:
+  #       ELASTICSEARCH_HEAP_SIZE: 1024m
+  #       # Comma, semi-colon or space separated list of plugins to install at initialization.
+  #       ELASTICSEARCH_PLUGINS: analysis-icu
+  #     volumes:
+  #       # Extend the default configuration with custom settings like
+  #       # allowing CORS requests at `.lando/my_elasticsearch.yml`.
+  #       # @see: https://github.com/bitnami/bitnami-docker-elasticsearch#configuration-file.
+  #       - "./.lando/my_elasticsearch.yml:/opt/bitnami/elasticsearch/config/my_elasticsearch.yml"
+  # kibana:
+  #   type: compose
+  #   ssl: true
+  #   sslExpose: false
+  #   services:
+  #     image: "bitnami/kibana:7.12.0"
+  #     command: "/opt/bitnami/scripts/kibana/entrypoint.sh /opt/bitnami/scripts/kibana/run.sh"
+  mailhog:
+    type: mailhog
+    hogfrom:
+      - appserver
+  node:
+    type: node
+    build:
+      - "npm install"
+
+proxy:
+  mailhog:
+    - mail.lndo.site
+  # kibana:
+  #   - "kibana.lndo.site:5601"
+
+events:
+  post-db-import:
+    - appserver: "cd $LANDO_WEBROOT && drush cache:rebuild -y && drush @local user:login"
+
+env_file:
+  - .lando/.env
+
+# Tested with Lando version
+version: v3.6.0
