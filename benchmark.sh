@@ -26,4 +26,4 @@ rm ${cookie_file}
 drupal_session_cookie=$(sed 's/\s/=/g' <<< "$drupal_session_cookie")
 
 # Run ab tests.
-ab -C ${drupal_session_cookie} -n 50 https://drupal-project.lndo.site/admin/modules
+ab -C ${drupal_session_cookie} -n 50 -l https://drupal-project.lndo.site/admin/modules
