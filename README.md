@@ -14,7 +14,7 @@ This project comes with [Lando](https://lando.dev/) and [DDEV](https://ddev.com/
 ### Lando
 
 ```sh
-lando start && lando drush si basic --config-dir=../config/sync
+lando start && lando drush si --existing-config
 lando drush uli
 ab -C [session-cookie-name-here]=[session-cookie-value-here] -n 50 -l https://drupal-benchmark.lndo.site/admin/modules
 ```
@@ -22,7 +22,7 @@ ab -C [session-cookie-name-here]=[session-cookie-value-here] -n 50 -l https://dr
 ### DDEV
 
 ```sh
-ddev start && ddev composer install && ddev drush si basic --config-dir=../config/sync
+ddev start && ddev composer install && ddev drush si --existing-config
 ddev drush uli
 ab -C [session-cookie-name-here]=[session-cookie-value-here] -n 50 -l https://drupal-benchmark.ddev.site/admin/modules
 ```
