@@ -9,9 +9,9 @@ This project is simply based on the [Wunder template for Drupal projects](https:
 - Login to Drupal in your browser and copy the session cookie from the browser
 - Run a benchmark with ab
 
-This project comes with Lando and DDEV environments preconfigured. Please find more detailed examples for running the benchmark in these environemtns below.
+This project comes with [Lando](https://lando.dev/) and [DDEV](https://ddev.com/) environments preconfigured. Please find more detailed examples for running the benchmark in these environemtns below.
 
-### [Lando](https://lando.dev/)
+### Lando
 
 ```sh
 lando start && lando drush si basic --config-dir=../config/sync
@@ -19,7 +19,7 @@ lando drush uli
 ab -C [session-cookie-name-here]=[session-cookie-value-here] -n 50 -l https://drupal-benchmark.lndo.site/admin/modules
 ```
 
-### [DDEV](https://ddev.com/)
+### DDEV
 
 ```sh
 ddev start && ddev composer install && ddev drush si basic --config-dir=../config/sync
