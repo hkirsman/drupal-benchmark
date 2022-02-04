@@ -1,4 +1,4 @@
-name: drupal-project
+name: drupal-benchmark
 recipe: drupal9
 
 config:
