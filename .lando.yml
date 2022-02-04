@@ -49,7 +49,7 @@ services:
         DB_USER_DRUPAL: drupal9
         DB_PASS_DRUPAL: drupal9
         DB_HOST_DRUPAL: database
-        DRUSH_OPTIONS_URI: https://drupal-project.lndo.site
+        DRUSH_OPTIONS_URI: https://drupal-benchmark.lndo.site
         # Support debugging with XDEBUG 3.
         XDEBUG_MODE:
         PHP_IDE_CONFIG: serverName=appserver
