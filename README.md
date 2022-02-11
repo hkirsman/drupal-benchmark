@@ -15,14 +15,14 @@ This project comes with [Lando](https://lando.dev/) and [DDEV](https://ddev.com/
 ### Lando
 
 ```sh
-lando start && lando drush si --existing-config
+lando start && lando drush si --yes --existing-config
 ./benchmark.sh
 ```
 
 ### DDEV
 
 ```sh
-ddev start && ddev composer install && ddev drush si --existing-config
+ddev start && ddev composer install && ddev drush si --yes --existing-config
 ./benchmark.sh
 ```
 
