@@ -25,5 +25,8 @@ rm ${cookie_file}
 # Replace space with = to make it acceptable parameter for ab tool.
 drupal_session_cookie=$(sed 's/\s/=/g' <<< "$drupal_session_cookie")
 
+# In some OS's \s does not match tabs so let's try and catch that here.
+drupal_session_cookie=$(sed 's/\t/=/g' <<< "$drupal_session_cookie")
+
 # Run ab tests.
 ab -C ${drupal_session_cookie} -n 50 -l https://drupal-project.lndo.site/admin/modules
