@@ -29,4 +29,4 @@ drupal_session_cookie=$(sed 's/\s/=/g' <<< "$drupal_session_cookie")
 drupal_session_cookie=$(sed 's/\t/=/g' <<< "$drupal_session_cookie")
 
 # Run ab tests.
-ab -C ${drupal_session_cookie} -n 50 -l https://drupal-benchmark.lndo.site/admin/modules
+ab -C ${drupal_session_cookie} -n 50 -l "$1"
