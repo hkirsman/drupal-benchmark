@@ -3,7 +3,6 @@
 # Benchmark Drupal site.
 
 set -xeuo pipefail
-export PATH="/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:$HOME/.composer/vendor/bin"
 
 cookie_file="cookies.txt"
 
