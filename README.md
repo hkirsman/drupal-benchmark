@@ -9,7 +9,7 @@ This project is simply based on the [Wunder template for Drupal projects](https:
 - Login to Drupal in your browser and copy the session cookie from the browser
 - Run a benchmark with ab
 
-This project comes with [Lando](https://lando.dev/) and [DDEV](https://ddev.com/) environments preconfigured. Please find more detailed examples for running the benchmark in these environemtns below.
+This project comes with [Lando](https://lando.dev/) and [DDEV](https://ddev.com/) environments preconfigured. Please find more detailed examples for running the benchmark in these environments below.
 
 ### Lando
 
