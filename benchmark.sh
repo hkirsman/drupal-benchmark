@@ -4,22 +4,16 @@
 
 set -xeuo pipefail
 
-cookie_file="cookies.txt"
-
 # Get login URL and remove \r fron the end.
 login_url="$(lando drush uli)"
 login_url="${login_url//[$'\r']}"
 
-# Log in and save cookie info to file.
-curl \
+# Log in and output cookies to stdout.
+drupal_session_cookie=$(curl \
   --insecure \
   --max-redirs 5 \
-  --cookie-jar $cookie_file \
-  ${login_url}
-
-# Get SESS cookie from cookies.txt and remove the cookies.txt.
-drupal_session_cookie="$(grep -Eo 'SSESS[a-z0-9]+\s[a-zA-Z0-9%-]+' $cookie_file)"
-rm ${cookie_file}
+  --cookie-jar - \
+  "$login_url" | grep -Eo 'SSESS[a-z0-9]+\s[a-zA-Z0-9%-]+')
 
 # Replace space with = to make it acceptable parameter for ab tool.
 drupal_session_cookie=$(sed 's/\s/=/g' <<< "$drupal_session_cookie")

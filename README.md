@@ -8,7 +8,7 @@ This project is simply based on the [Wunder template for Drupal projects](https:
 - Optionally checkout a specific version, for example: `git checkout tags/v0.1`
 - Start your environment and build Drupal
 - Login to Drupal in your browser and copy the session cookie from the browser
-- Run a benchmark with ab
+- Run a benchmark with ab (in Ubuntu install with `sudo apt-get install apache2-utils`)
 
 This project comes with [Lando](https://lando.dev/) and [DDEV](https://ddev.com/) environments preconfigured. Please find more detailed examples for running the benchmark in these environments below.
 
