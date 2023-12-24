@@ -4,8 +4,14 @@
 
 set -xeuo pipefail
 
+# Check if the first parameter is either "ddev" or "lando".
+if [[ $# -lt 1 || ( "$1" != "ddev" && "$1" != "lando" ) ]]; then
+  echo "Error: First parameter must be either 'ddev' or 'lando'."
+  exit 1
+fi
+
 # Get login URL and remove \r fron the end.
-login_url="$(lando drush uli)"
+login_url="$($1 drush uli)"
 login_url="${login_url//[$'\r']}"
 
 # Log in and output cookies to stdout.
@@ -22,4 +28,8 @@ drupal_session_cookie=$(sed 's/\s/=/g' <<< "$drupal_session_cookie")
 drupal_session_cookie=$(sed 's/\t/=/g' <<< "$drupal_session_cookie")
 
 # Run ab tests.
-ab -C ${drupal_session_cookie} -n 50 -l "$1"
+if [[ "$1" == "ddev" ]]; then
+  ab -C ${drupal_session_cookie} -n 50 -l https://drupal-benchmark.ddev.site/admin/modules
+elif [[ "$1" == "lando" ]]; then
+  ab -C ${drupal_session_cookie} -n 50 -l https://drupal-benchmark.lndo.site/admin/modules
+fi
