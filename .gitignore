@@ -37,3 +37,7 @@
 
 # Ignore node modules
 node_modules
+
+# Benchmark
+benchmark_results_*
+urls.txt
