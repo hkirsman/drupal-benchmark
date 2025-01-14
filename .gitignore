@@ -37,3 +37,6 @@
 
 # Ignore node modules
 node_modules
+
+# Ignore Python cache
+__pycache__
