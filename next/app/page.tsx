@@ -6,8 +6,7 @@ import BenchmarkTable from './benchmark-table';
 // V-- THIS IS THE NEW LINE YOU NEED TO ADD --V
 // This tells Next.js to treat this page as a Static Site Generation (SSG) page
 // that revalidates at most once every 300 seconds (5 minutes).
-// Temporarily disabled to test the build process.
-// export const revalidate = 300;
+export const revalidate = 300;
 // -----------------------------------------------------------------------------
 
 // The type definition remains the same
