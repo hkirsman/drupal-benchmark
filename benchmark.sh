@@ -12,10 +12,12 @@
 ################################################################################
 
 API_URL="https://drupal-benchmark.vercel.app/api/submit"
+CACHE_CLEAR_URL="https://drupal-benchmark.vercel.app/api/clear-cache"
 # Enable if developing locally.
 # First run the next.js erver:
 # cd next && ddev npm run dev
 #API_URL="https://frontend.drupal-benchmark.ddev.site/api/submit"
+#CACHE_CLEAR_URL="https://frontend.drupal-benchmark.ddev.site/api/clear-cache"
 
 # Check if SUBMISSION_SECRET is set
 if [ -z "$SUBMISSION_SECRET" ]; then
@@ -135,6 +137,18 @@ response_code=$(curl --silent --output /dev/null --write-out "%{http_code}" \
 
 if [ "$response_code" -ge 200 ] && [ "$response_code" -lt 300 ]; then
   echo "Data submitted successfully! (Server responded with HTTP $response_code)"
+
+  # Clear the cache to ensure fresh data is displayed
+  echo "Clearing cache to refresh dashboard..."
+  cache_response_code=$(curl --silent --output /dev/null --write-out "%{http_code}" \
+    -X POST "$CACHE_CLEAR_URL" \
+    -H "Authorization: Bearer $SUBMISSION_SECRET")
+
+  if [ "$cache_response_code" -eq 200 ]; then
+    echo "Cache cleared successfully!"
+  else
+    echo "Warning: Cache clearing failed (HTTP $cache_response_code), but data was submitted successfully."
+  fi
 else
   echo "Error: Failed to submit data. The server responded with HTTP status $response_code." >&2
   echo "You can view the data payload that was not sent:" >&2
