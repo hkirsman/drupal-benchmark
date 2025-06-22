@@ -1,0 +1,118 @@
+"use client"; // This is the most important line! It marks this as a Client Component.
+
+import { useState, useMemo } from 'react';
+
+// This is the same type definition from your page.tsx
+interface ProcessedBenchmark {
+  id: number;
+  createdAt: string;
+  os: string;
+  cpu: string;
+  memory: string;
+  environment: string;
+  drupalVersion: string;
+  numRequests: number;
+  avgResponseTime: number;
+  minResponseTime: number;
+  maxResponseTime: number;
+  requestsPerSecond: string;
+}
+
+// Define the props for our component
+interface BenchmarkTableProps {
+  data: ProcessedBenchmark[];
+}
+
+// Define the keys we can sort by
+type SortKey = keyof ProcessedBenchmark;
+
+export default function BenchmarkTable({ data }: BenchmarkTableProps) {
+  const [sortConfig, setSortConfig] = useState<{ key: SortKey; direction: 'asc' | 'desc' } | null>({ key: 'numRequests', direction: 'desc' });
+
+  // useMemo will re-sort the data only when the data prop or the sortConfig changes
+  const sortedData = useMemo(() => {
+    let sortableData = [...data];
+    if (sortConfig !== null) {
+      sortableData.sort((a, b) => {
+        const aValue = a[sortConfig.key];
+        const bValue = b[sortConfig.key];
+
+        if (aValue < bValue) {
+          return sortConfig.direction === 'asc' ? -1 : 1;
+        }
+        if (aValue > bValue) {
+          return sortConfig.direction === 'asc' ? 1 : -1;
+        }
+        return 0;
+      });
+    }
+    return sortableData;
+  }, [data, sortConfig]);
+
+  const requestSort = (key: SortKey) => {
+    let direction: 'asc' | 'desc' = 'asc';
+    if (sortConfig && sortConfig.key === key && sortConfig.direction === 'asc') {
+      direction = 'desc';
+    }
+    setSortConfig({ key, direction });
+  };
+
+  // Helper function to render the sort arrow
+  const getSortArrow = (key: SortKey) => {
+    if (!sortConfig || sortConfig.key !== key) return null;
+    return sortConfig.direction === 'asc' ? ' ▲' : ' ▼';
+  };
+
+  // An array to define our table headers for easier mapping
+  const headers: { key: SortKey; label: string; isNumeric?: boolean }[] = [
+    { key: 'createdAt', label: 'Date' },
+    { key: 'os', label: 'OS' },
+    { key: 'cpu', label: 'CPU' },
+    { key: 'memory', label: 'RAM' },
+    { key: 'environment', label: 'Environment' },
+    { key: 'drupalVersion', label: 'Drupal Ver.' },
+    { key: 'numRequests', label: 'Total Requests', isNumeric: true },
+    { key: 'requestsPerSecond', label: 'Req/s', isNumeric: true },
+    { key: 'avgResponseTime', label: 'Avg (ms)', isNumeric: true },
+    { key: 'minResponseTime', label: 'Min (ms)', isNumeric: true },
+    { key: 'maxResponseTime', label: 'Max (ms)', isNumeric: true },
+  ];
+
+  return (
+    <div className="overflow-x-auto bg-white dark:bg-gray-800 rounded-lg shadow">
+      <table className="min-w-full text-sm text-left">
+        <thead className="bg-gray-100 dark:bg-gray-700">
+          <tr>
+            {headers.map((header) => (
+              <th
+                key={header.key}
+                className={`px-4 py-3 font-medium cursor-pointer ${header.isNumeric ? 'text-right' : ''}`}
+                onClick={() => requestSort(header.key)}
+              >
+                {header.label}
+                {getSortArrow(header.key)}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+          {sortedData.map((item) => (
+            <tr key={item.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50">
+              <td className="px-4 py-3 whitespace-nowrap">{new Date(item.createdAt).toLocaleString()}</td>
+              <td className="px-4 py-3">{item.os}</td>
+              <td className="px-4 py-3 truncate max-w-xs">{item.cpu}</td>
+              <td className="px-4 py-3">{item.memory}</td>
+              <td className="px-4 py-3 font-mono">{item.environment}</td>
+              <td className="px-4 py-3 font-mono">{item.drupalVersion}</td>
+              <td className="px-4 py-3 font-mono text-right">{item.numRequests}</td>
+              <td className="px-4 py-3 font-mono text-right">{item.requestsPerSecond}</td>
+              <td className="px-4 py-3 font-mono text-right">{item.avgResponseTime}</td>
+              <td className="px-4 py-3 font-mono text-right">{item.minResponseTime}</td>
+              <td className="px-4 py-3 font-mono text-right">{item.maxResponseTime}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
