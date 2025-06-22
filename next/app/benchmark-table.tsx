@@ -13,6 +13,8 @@ interface ProcessedBenchmark {
   dockerVersion: string;
   environment: string;
   drupalVersion: string;
+  databaseType: string;
+  databaseVersion: string;
   numRequests: number;
   avgResponseTime: number;
   minResponseTime: number;
@@ -75,6 +77,8 @@ export default function BenchmarkTable({ data }: BenchmarkTableProps) {
     { key: 'dockerVersion', label: 'Docker' },
     { key: 'environment', label: 'Environment' },
     { key: 'drupalVersion', label: 'Drupal Ver.' },
+    { key: 'databaseType', label: 'Database Type' },
+    { key: 'databaseVersion', label: 'Database Ver.' },
     { key: 'numRequests', label: 'Total Requests', isNumeric: true },
     { key: 'requestsPerSecond', label: 'Req/s', isNumeric: true },
     { key: 'avgResponseTime', label: 'Avg (ms)', isNumeric: true },
@@ -110,6 +114,8 @@ export default function BenchmarkTable({ data }: BenchmarkTableProps) {
               <td className="px-4 py-3 font-mono text-xs">{item.dockerVersion}</td>
               <td className="px-4 py-3 font-mono">{item.environment}</td>
               <td className="px-4 py-3 font-mono">{item.drupalVersion}</td>
+              <td className="px-4 py-3 font-mono">{item.databaseType}</td>
+              <td className="px-4 py-3 font-mono">{item.databaseVersion}</td>
               <td className="px-4 py-3 font-mono text-right">{item.numRequests}</td>
               <td className="px-4 py-3 font-mono text-right">{item.requestsPerSecond}</td>
               <td className="px-4 py-3 font-mono text-right">{item.avgResponseTime}</td>

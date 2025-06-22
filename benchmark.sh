@@ -100,6 +100,27 @@ gather_metadata() {
     docker_version=""
   fi
 
+  # Database detection
+  db_version_raw=$($ENVIRONMENT mysql --version 2>/dev/null | head -n 1)
+  if [ -n "$db_version_raw" ]; then
+    # Extract the distribution version (e.g., 10.3.39-MariaDB or 8.0.35)
+    db_version=$(echo "$db_version_raw" | sed -n 's/.*Distrib \([0-9]\+\.[0-9]\+\.[0-9]\+[^,]*\).*/\1/p')
+    if [ -z "$db_version" ]; then
+      # Fallback: try to extract just the version number
+      db_version=$(echo "$db_version_raw" | grep -o '[0-9]\+\.[0-9]\+\.[0-9]\+' | head -1)
+    fi
+
+    # Determine database type from version string
+    if echo "$db_version_raw" | grep -q "MariaDB"; then
+      db_type="MariaDB"
+    else
+      db_type="MySQL"
+    fi
+  else
+    db_type="Unknown"
+    db_version="Unknown"
+  fi
+
   user_name=$(whoami)
 
   if [[ "$os_name" == "Darwin" ]]; then
@@ -119,8 +140,10 @@ gather_metadata() {
     --arg git_commit "$git_commit" \
     --arg drupal_version "$drupal_version" \
     --arg docker_version "$docker_version" \
+    --arg db_type "$db_type" \
+    --arg db_version "$db_version" \
     --argjson system_info "$(jq -n --arg os "$os_name" --arg arch "$arch" --arg cpu "$cpu_info" --arg mem "${total_mem_gb}GB" '{os:$os, arch:$arch, cpu:$cpu, memory:$mem}')" \
-    '{metadata: {environment:$environment, user_name:$user_name, commit:$git_commit, drupal_version:$drupal_version, docker_version:$docker_version, system:$system_info}}'
+    '{metadata: {environment:$environment, user_name:$user_name, commit:$git_commit, drupal_version:$drupal_version, docker_version:$docker_version, database:{type:$db_type, version:$db_version}, system:$system_info}}'
 }
 
 echo "Preparing data for submission..."

@@ -20,6 +20,8 @@ interface ProcessedBenchmark {
   dockerVersion: string;
   environment: string;
   drupalVersion: string;
+  databaseType: string;
+  databaseVersion: string;
   numRequests: number;
   avgResponseTime: number;
   minResponseTime: number;
@@ -63,6 +65,8 @@ export default async function Home() {
       dockerVersion: record.metadata.docker_version || '-',
       environment: record.metadata.environment,
       drupalVersion: record.metadata.drupal_version,
+      databaseType: record.metadata.database?.type || 'Unknown',
+      databaseVersion: record.metadata.database?.version || 'Unknown',
       numRequests: numRequests,
       avgResponseTime: avgResponseTime,
       minResponseTime: Math.round(adminStats.min_response_time),
