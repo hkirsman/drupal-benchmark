@@ -90,7 +90,14 @@ gather_metadata() {
   arch=$(uname -m)
   git_commit=$(git rev-parse --short HEAD)
   drupal_version=$($ENVIRONMENT drush status --field=drupal-version)
-  docker_version=$($ENVIRONMENT --version | grep "docker-desktop" | awk '{print $NF}') || docker_version="N/A"
+
+  # Improved Docker version detection
+  if command -v docker &> /dev/null; then
+    docker_version=$(docker --version | sed 's/Docker version //' | sed 's/,.*//')
+  else
+    docker_version=""
+  fi
+
   user_name=$(whoami)
 
   if [[ "$os_name" == "Darwin" ]]; then

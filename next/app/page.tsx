@@ -61,7 +61,7 @@ export default async function Home() {
       os: record.metadata.system.os,
       cpu: record.metadata.system.cpu,
       memory: record.metadata.system.memory,
-      dockerVersion: record.metadata.docker_version || 'Not installed',
+      dockerVersion: record.metadata.docker_version || '-',
       environment: record.metadata.environment,
       drupalVersion: record.metadata.drupal_version,
       numRequests: numRequests,
