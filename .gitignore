@@ -40,3 +40,6 @@ node_modules
 
 # Ignore Python cache
 __pycache__
+
+# DDEV
+.ddev/.env
