@@ -172,6 +172,9 @@ if [ "$response_code" -ge 200 ] && [ "$response_code" -lt 300 ]; then
   else
     echo "Warning: Cache clearing failed (HTTP $cache_response_code), but data was submitted successfully."
   fi
+
+  echo ""
+  echo "Check your results at: https://drupal-benchmark.vercel.app/"
 else
   echo "Error: Failed to submit data. The server responded with HTTP status $response_code." >&2
   echo "You can view the data payload that was not sent:" >&2
