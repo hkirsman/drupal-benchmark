@@ -6,9 +6,11 @@ import { useState, useMemo } from 'react';
 interface ProcessedBenchmark {
   id: number;
   createdAt: string;
+  username: string;
   os: string;
   cpu: string;
   memory: string;
+  dockerVersion: string;
   environment: string;
   drupalVersion: string;
   numRequests: number;
@@ -66,9 +68,11 @@ export default function BenchmarkTable({ data }: BenchmarkTableProps) {
   // An array to define our table headers for easier mapping
   const headers: { key: SortKey; label: string; isNumeric?: boolean }[] = [
     { key: 'createdAt', label: 'Date' },
+    { key: 'username', label: 'User' },
     { key: 'os', label: 'OS' },
     { key: 'cpu', label: 'CPU' },
     { key: 'memory', label: 'RAM' },
+    { key: 'dockerVersion', label: 'Docker' },
     { key: 'environment', label: 'Environment' },
     { key: 'drupalVersion', label: 'Drupal Ver.' },
     { key: 'numRequests', label: 'Total Requests', isNumeric: true },
@@ -99,9 +103,11 @@ export default function BenchmarkTable({ data }: BenchmarkTableProps) {
           {sortedData.map((item) => (
             <tr key={item.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50">
               <td className="px-4 py-3 whitespace-nowrap">{new Date(item.createdAt).toLocaleString()}</td>
+              <td className="px-4 py-3 font-medium">{item.username}</td>
               <td className="px-4 py-3">{item.os}</td>
               <td className="px-4 py-3 truncate max-w-xs">{item.cpu}</td>
               <td className="px-4 py-3">{item.memory}</td>
+              <td className="px-4 py-3 font-mono text-xs">{item.dockerVersion}</td>
               <td className="px-4 py-3 font-mono">{item.environment}</td>
               <td className="px-4 py-3 font-mono">{item.drupalVersion}</td>
               <td className="px-4 py-3 font-mono text-right">{item.numRequests}</td>

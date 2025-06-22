@@ -13,9 +13,11 @@ export const revalidate = 300;
 interface ProcessedBenchmark {
   id: number;
   createdAt: string;
+  username: string;
   os: string;
   cpu: string;
   memory: string;
+  dockerVersion: string;
   environment: string;
   drupalVersion: string;
   numRequests: number;
@@ -54,9 +56,11 @@ export default async function Home() {
     return [{
       id: record.id,
       createdAt: record.created_at,
+      username: record.metadata.user_name || 'anonymous',
       os: record.metadata.system.os,
       cpu: record.metadata.system.cpu,
       memory: record.metadata.system.memory,
+      dockerVersion: record.metadata.docker_version || 'Not installed',
       environment: record.metadata.environment,
       drupalVersion: record.metadata.drupal_version,
       numRequests: numRequests,

@@ -79,7 +79,7 @@ if [ -z "$login_url" ]; then
 fi
 
 echo "Running Locust benchmark for 30 seconds..."
-ULI="$login_url" locust --headless --users 1 --spawn-rate 1 --run-time 30 --stop-timeout 5 --json -H "$HOST_URL" > "$TEMP_STATS_FILE"
+ULI="$login_url" locust --headless --only-summary --users 1 --spawn-rate 1 --run-time 30 --stop-timeout 5 --json -H "$HOST_URL" > "$TEMP_STATS_FILE"
 echo "Benchmark finished."
 echo "--------------------------------------------------"
 
@@ -90,6 +90,8 @@ gather_metadata() {
   arch=$(uname -m)
   git_commit=$(git rev-parse --short HEAD)
   drupal_version=$($ENVIRONMENT drush status --field=drupal-version)
+  docker_version=$($ENVIRONMENT --version | grep "docker-desktop" | awk '{print $NF}') || docker_version="N/A"
+  user_name=$(whoami)
 
   if [[ "$os_name" == "Darwin" ]]; then
     cpu_info=$(sysctl -n machdep.cpu.brand_string)
@@ -104,10 +106,12 @@ gather_metadata() {
 
   jq -n \
     --arg environment "$ENVIRONMENT" \
+    --arg user_name "$user_name" \
     --arg git_commit "$git_commit" \
     --arg drupal_version "$drupal_version" \
+    --arg docker_version "$docker_version" \
     --argjson system_info "$(jq -n --arg os "$os_name" --arg arch "$arch" --arg cpu "$cpu_info" --arg mem "${total_mem_gb}GB" '{os:$os, arch:$arch, cpu:$cpu, memory:$mem}')" \
-    '{metadata: {environment:$environment, commit:$git_commit, drupal_version:$drupal_version, system:$system_info}}'
+    '{metadata: {environment:$environment, user_name:$user_name, commit:$git_commit, drupal_version:$drupal_version, docker_version:$docker_version, system:$system_info}}'
 }
 
 echo "Preparing data for submission..."
