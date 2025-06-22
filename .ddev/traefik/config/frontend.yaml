@@ -1,0 +1,36 @@
+http:
+  routers:
+    # Router for HTTP (port 80) - redirect to HTTPS
+    drupal-benchmark-web-80-http-frontend:
+      entrypoints:
+        - http-80
+      rule: Host(`frontend.drupal-benchmark.ddev.site`)
+      service: "drupal-benchmark-web-3000"
+      ruleSyntax: v3
+      tls: false
+      priority: 100
+      middlewares:
+        - redirect-to-https
+
+    # Router for HTTPS (port 443)
+    drupal-benchmark-web-80-https-frontend:
+      entrypoints:
+        - http-443
+      rule: Host(`frontend.drupal-benchmark.ddev.site`)
+      service: "drupal-benchmark-web-3000"
+      ruleSyntax: v3
+      tls: true
+      priority: 100
+
+  middlewares:
+    redirect-to-https:
+      redirectscheme:
+        scheme: https
+        permanent: true
+
+  services:
+    # The custom service that routes to your Next.js app
+    drupal-benchmark-web-3000:
+      loadbalancer:
+        servers:
+          - url: http://ddev-drupal-benchmark-web:3000
