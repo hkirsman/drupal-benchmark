@@ -32,3 +32,33 @@ lando start && lando drush si --yes --existing-config
 ddev start && ddev composer install && ddev drush si --yes --existing-config
 ./benchmark.sh ddev
 ```
+
+## Developing frontend
+
+### Set database information
+
+Set database information at `.ddev/.env`. The database is hosted at [Supabase](https://supabase.com/).
+```
+NEXT_PUBLIC_SUPABASE_URL
+SUPABASE_SERVICE_KEY
+```
+
+Ask the values from Hannes.
+
+### Install frontend
+
+Install frontend (stopping frontend so `.ddev/.env` would be read again):
+
+```sh
+cd next && ddev stop && ddev npm install
+```
+
+### Run frontend
+
+```sh
+ddev npm run dev
+```
+
+### Visit frontend
+
+Visit at: https://frontend.drupal-benchmark.ddev.site/
