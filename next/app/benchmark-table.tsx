@@ -108,7 +108,7 @@ export default function BenchmarkTable({ data }: BenchmarkTableProps) {
         <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
           {sortedData.map((item) => (
             <tr key={item.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50">
-              <td className="px-4 py-3 whitespace-nowrap">{new Date(item.createdAt).toLocaleString()}</td>
+              <td className="px-4 py-3 whitespace-nowrap">{new Date(item.createdAt).toLocaleString([], {hour12: false})}</td>
               <td className="px-4 py-3 font-medium">{item.username}</td>
               <td className="px-4 py-3">{item.os}</td>
               <td className="px-4 py-3 truncate max-w-xs">{item.cpu}</td>
