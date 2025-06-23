@@ -15,6 +15,7 @@ interface ProcessedBenchmark {
   drupalVersion: string;
   databaseType: string;
   databaseVersion: string;
+  phpVersion: string;
   numRequests: number;
   avgResponseTime: number;
   minResponseTime: number;
@@ -28,7 +29,7 @@ interface BenchmarkTableProps {
 }
 
 // Define the keys we can sort by
-type SortKey = keyof ProcessedBenchmark;
+type SortKey = 'createdAt' | 'username' | 'os' | 'cpu' | 'memory' | 'dockerVersion' | 'environment' | 'drupalVersion' | 'databaseType' | 'databaseVersion' | 'phpVersion' | 'numRequests' | 'requestsPerSecond' | 'avgResponseTime' | 'minResponseTime' | 'maxResponseTime';
 
 export default function BenchmarkTable({ data }: BenchmarkTableProps) {
   const [sortConfig, setSortConfig] = useState<{ key: SortKey; direction: 'asc' | 'desc' } | null>({ key: 'numRequests', direction: 'desc' });
@@ -79,6 +80,7 @@ export default function BenchmarkTable({ data }: BenchmarkTableProps) {
     { key: 'drupalVersion', label: 'Drupal Ver.' },
     { key: 'databaseType', label: 'Database Type' },
     { key: 'databaseVersion', label: 'Database Ver.' },
+    { key: 'phpVersion', label: 'PHP' },
     { key: 'numRequests', label: 'Total Requests', isNumeric: true },
     { key: 'requestsPerSecond', label: 'Req/s', isNumeric: true },
     { key: 'avgResponseTime', label: 'Avg (ms)', isNumeric: true },
@@ -116,6 +118,7 @@ export default function BenchmarkTable({ data }: BenchmarkTableProps) {
               <td className="px-4 py-3 font-mono">{item.drupalVersion}</td>
               <td className="px-4 py-3 font-mono">{item.databaseType}</td>
               <td className="px-4 py-3 font-mono">{item.databaseVersion}</td>
+              <td className="px-4 py-3 font-mono">{item.phpVersion}</td>
               <td className="px-4 py-3 font-mono text-right">{item.numRequests}</td>
               <td className="px-4 py-3 font-mono text-right">{item.requestsPerSecond}</td>
               <td className="px-4 py-3 font-mono text-right">{item.avgResponseTime}</td>

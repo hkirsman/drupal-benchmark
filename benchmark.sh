@@ -121,6 +121,15 @@ gather_metadata() {
     db_version="Unknown"
   fi
 
+  # PHP version detection
+  php_version_raw=$($ENVIRONMENT php --version 2>/dev/null | head -n 1)
+  if [ -n "$php_version_raw" ]; then
+    # Extract just the version number (e.g., 8.0.30)
+    php_version=$(echo "$php_version_raw" | grep -o '[0-9]\+\.[0-9]\+\.[0-9]\+' | head -1)
+  else
+    php_version="Unknown"
+  fi
+
   user_name=$(whoami)
 
   if [[ "$os_name" == "Darwin" ]]; then
@@ -142,8 +151,9 @@ gather_metadata() {
     --arg docker_version "$docker_version" \
     --arg db_type "$db_type" \
     --arg db_version "$db_version" \
+    --arg php_version "$php_version" \
     --argjson system_info "$(jq -n --arg os "$os_name" --arg arch "$arch" --arg cpu "$cpu_info" --arg mem "${total_mem_gb}GB" '{os:$os, arch:$arch, cpu:$cpu, memory:$mem}')" \
-    '{metadata: {environment:$environment, user_name:$user_name, commit:$git_commit, drupal_version:$drupal_version, docker_version:$docker_version, database:{type:$db_type, version:$db_version}, system:$system_info}}'
+    '{metadata: {environment:$environment, user_name:$user_name, commit:$git_commit, drupal_version:$drupal_version, docker_version:$docker_version, database:{type:$db_type, version:$db_version}, php_version:$php_version, system:$system_info}}'
 }
 
 echo "Preparing data for submission..."
