@@ -88,14 +88,16 @@ export default async function Home() {
 
          <footer className="text-center mt-8 text-sm text-gray-500">
             <div className="flex items-center justify-center gap-2 mb-2">
-              <Image
-                className="dark:invert"
-                src="/next.svg"
-                alt="Next.js logo"
-                width={80}
-                height={20}
-                priority
-              />
+              <a href="https://nextjs.org" target="_blank" rel="noopener noreferrer">
+                <Image
+                  className="dark:invert"
+                  src="/next.svg"
+                  alt="Next.js logo"
+                  width={40}
+                  height={10}
+                  priority
+                />
+              </a>
             </div>
             <p>Displaying {processedData.length} benchmark results. Click headers to sort.</p>
         </footer>
