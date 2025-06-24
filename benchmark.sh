@@ -73,6 +73,15 @@ ENVIRONMENT=$1
 TEMP_STATS_FILE=$(mktemp)
 trap 'rm -f -- "$TEMP_STATS_FILE"' EXIT # Ensure temp file is deleted on exit
 
+# Ask for computer model information early
+echo ""
+echo "Please enter your computer model (e.g., 'MacBook Pro 14”, Nov 2024', 'Lenovo ThinkPad S3-S440', 'Acer Aspire V 13'):"
+echo "Press Enter to skip if you don't want to specify this."
+read -r COMPUTER_MODEL
+if [ -z "$COMPUTER_MODEL" ]; then
+  COMPUTER_MODEL="Unknown"
+fi
+
 if [[ "$ENVIRONMENT" == "ddev" ]]; then
   HOST_URL="https://drupal-benchmark.ddev.site"
 elif [[ "$ENVIRONMENT" == "lando" ]]; then
@@ -197,8 +206,9 @@ gather_metadata() {
     --arg db_type "$db_type" \
     --arg db_version "$db_version" \
     --arg php_version "$php_version" \
+    --arg computer_model "$COMPUTER_MODEL" \
     --argjson system_info "$(jq -n --arg os "$os_name" --arg arch "$arch" --arg cpu "$cpu_info" --arg mem "${total_mem_gb}GB" '{os:$os, arch:$arch, cpu:$cpu, memory:$mem}')" \
-    '{metadata: {environment:$environment, user_name:$user_name, commit:$git_commit, drupal_version:$drupal_version, docker_version:$docker_version, web_server:$web_server, database:{type:$db_type, version:$db_version}, php_version:$php_version, system:$system_info}}'
+    '{metadata: {environment:$environment, user_name:$user_name, commit:$git_commit, drupal_version:$drupal_version, docker_version:$docker_version, web_server:$web_server, database:{type:$db_type, version:$db_version}, php_version:$php_version, computer_model:$computer_model, system:$system_info}}'
 }
 
 echo "Preparing data for submission..."

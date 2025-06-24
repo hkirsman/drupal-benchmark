@@ -4,7 +4,7 @@ import { useState, useMemo } from 'react';
 
 // This is the same type definition from your page.tsx
 interface ProcessedBenchmark {
-  id: number;
+  id: string;
   createdAt: string;
   username: string;
   os: string;
@@ -17,11 +17,12 @@ interface ProcessedBenchmark {
   databaseType: string;
   databaseVersion: string;
   phpVersion: string;
+  computerModel: string;
   numRequests: number;
+  requestsPerSecond: number;
   avgResponseTime: number;
   minResponseTime: number;
   maxResponseTime: number;
-  requestsPerSecond: string;
 }
 
 // Define the props for our component
@@ -30,7 +31,7 @@ interface BenchmarkTableProps {
 }
 
 // Define the keys we can sort by
-type SortKey = 'createdAt' | 'username' | 'os' | 'cpu' | 'memory' | 'dockerVersion' | 'environment' | 'drupalVersion' | 'webServer' | 'databaseType' | 'phpVersion' | 'numRequests' | 'requestsPerSecond' | 'avgResponseTime' | 'minResponseTime' | 'maxResponseTime';
+type SortKey = 'createdAt' | 'username' | 'os' | 'cpu' | 'memory' | 'dockerVersion' | 'environment' | 'drupalVersion' | 'webServer' | 'databaseType' | 'phpVersion' | 'computerModel' | 'numRequests' | 'requestsPerSecond' | 'avgResponseTime' | 'minResponseTime' | 'maxResponseTime';
 
 export default function BenchmarkTable({ data }: BenchmarkTableProps) {
   const [sortConfig, setSortConfig] = useState<{ key: SortKey; direction: 'asc' | 'desc' } | null>({ key: 'numRequests', direction: 'desc' });
@@ -72,10 +73,10 @@ export default function BenchmarkTable({ data }: BenchmarkTableProps) {
   // An array to define our table headers for easier mapping
   const headers: { key: SortKey; label: string; isNumeric?: boolean }[] = [
     { key: 'createdAt', label: 'Date' },
-    { key: 'username', label: 'User' },
+    { key: 'computerModel', label: 'Computer Model' },
     { key: 'os', label: 'OS' },
     { key: 'cpu', label: 'CPU' },
-    { key: 'memory', label: 'RAM' },
+    { key: 'memory', label: 'Memory' },
     { key: 'dockerVersion', label: 'Docker' },
     { key: 'environment', label: 'Env' },
     { key: 'drupalVersion', label: 'Drupal' },
@@ -87,6 +88,7 @@ export default function BenchmarkTable({ data }: BenchmarkTableProps) {
     { key: 'avgResponseTime', label: 'Avg (ms)', isNumeric: true },
     { key: 'minResponseTime', label: 'Min (ms)', isNumeric: true },
     { key: 'maxResponseTime', label: 'Max (ms)', isNumeric: true },
+    { key: 'username', label: 'User' },
   ];
 
   return (
@@ -121,7 +123,7 @@ export default function BenchmarkTable({ data }: BenchmarkTableProps) {
             return (
               <tr key={item.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50">
                 <td className="px-3 py-2 whitespace-nowrap">{formattedDate}</td>
-                <td className="px-3 py-2 font-medium">{item.username}</td>
+                <td className="px-3 py-2 font-medium">{item.computerModel}</td>
                 <td className="px-3 py-2">{item.os}</td>
                 <td className="px-3 py-2 truncate max-w-xs">{item.cpu}</td>
                 <td className="px-3 py-2">{item.memory}</td>
@@ -136,6 +138,7 @@ export default function BenchmarkTable({ data }: BenchmarkTableProps) {
                 <td className="px-3 py-2 font-mono text-right">{item.avgResponseTime}</td>
                 <td className="px-3 py-2 font-mono text-right">{item.minResponseTime}</td>
                 <td className="px-3 py-2 font-mono text-right">{item.maxResponseTime}</td>
+                <td className="px-3 py-2 font-medium">{item.username}</td>
               </tr>
             );
           })}

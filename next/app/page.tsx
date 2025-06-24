@@ -11,7 +11,7 @@ export const revalidate = 300;
 
 // The type definition remains the same
 interface ProcessedBenchmark {
-  id: number;
+  id: string;
   createdAt: string;
   username: string;
   os: string;
@@ -24,11 +24,12 @@ interface ProcessedBenchmark {
   databaseType: string;
   databaseVersion: string;
   phpVersion: string;
+  computerModel: string;
   numRequests: number;
+  requestsPerSecond: number;
   avgResponseTime: number;
   minResponseTime: number;
   maxResponseTime: number;
-  requestsPerSecond: string;
 }
 
 const supabase = createClient(
@@ -71,11 +72,12 @@ export default async function Home() {
       databaseType: record.metadata.database?.type || 'Unknown',
       databaseVersion: record.metadata.database?.version || 'Unknown',
       phpVersion: record.metadata.php_version || 'Unknown',
+      computerModel: record.metadata.computer_model || 'Unknown',
       numRequests: numRequests,
+      requestsPerSecond: parseFloat(requestsPerSecond),
       avgResponseTime: avgResponseTime,
       minResponseTime: Math.round(adminStats.min_response_time),
       maxResponseTime: Math.round(adminStats.max_response_time),
-      requestsPerSecond: requestsPerSecond,
     }];
   });
 
