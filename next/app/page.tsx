@@ -79,23 +79,25 @@ export default async function Home() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 p-4 sm:p-8">
-      <main className="max-w-7xl mx-auto">
-        <div className="flex items-center gap-4 mb-8">
-          <Image
-            className="dark:invert"
-            src="/next.svg"
-            alt="Next.js logo"
-            width={150}
-            height={32}
-            priority
-          />
+      <main className="max-w-[1450px] mx-auto">
+        <div className="mb-8">
           <h1 className="text-2xl font-bold tracking-tight">Drupal Benchmark Results</h1>
         </div>
 
         <BenchmarkTable data={processedData} />
 
          <footer className="text-center mt-8 text-sm text-gray-500">
-            <p>Displaying {processedData.length} benchmark results for <code>/admin/modules</code>. Click headers to sort.</p>
+            <div className="flex items-center justify-center gap-2 mb-2">
+              <Image
+                className="dark:invert"
+                src="/next.svg"
+                alt="Next.js logo"
+                width={80}
+                height={20}
+                priority
+              />
+            </div>
+            <p>Displaying {processedData.length} benchmark results. Click headers to sort.</p>
         </footer>
       </main>
     </div>
