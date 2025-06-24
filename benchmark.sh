@@ -4,35 +4,43 @@
 #
 # Configuration
 #
-# - API_URL: The full URL to the API endpoint in your deployed Next.js app.
 # - SUBMISSION_SECRET: A simple password that the script sends to your API.
-#   This secret must also be set in your Next.js app's environment variables.
-#   The secret is loaded from .ddev/.env file (automatically loaded by DDEV).
+# - BENCHMARK_ENV: Set to "dev" for development mode, or leave unset for production.
+#   These variables are loaded from .ddev/.env file (automatically loaded by DDEV).
+#
+# The script will automatically use local URLs when BENCHMARK_ENV=dev
+# Otherwise, it uses production URLs by default.
 #
 ################################################################################
 
-API_URL="https://drupal-benchmark.vercel.app/api/submit"
-CACHE_CLEAR_URL="https://drupal-benchmark.vercel.app/api/clear-cache"
-# Enable if developing locally.
-# First run the next.js erver:
-# cd next && ddev npm run dev
-#API_URL="https://frontend.drupal-benchmark.ddev.site/api/submit"
-#CACHE_CLEAR_URL="https://frontend.drupal-benchmark.ddev.site/api/clear-cache"
+# Load environment variables from .ddev/.env if it exists
+if [ -f ".ddev/.env" ]; then
+  export $(grep -v '^#' .ddev/.env | xargs)
+fi
+
+# Set URLs based on environment.
+if [[ "$BENCHMARK_ENV" == "dev" ]]; then
+  API_URL="https://frontend.drupal-benchmark.ddev.site/api/submit"
+  CACHE_CLEAR_URL="https://frontend.drupal-benchmark.ddev.site/api/clear-cache"
+  DASHBOARD_URL="https://frontend.drupal-benchmark.ddev.site"
+  echo "🔧 Development mode enabled"
+else
+  API_URL="https://drupal-benchmark.vercel.app/api/submit"
+  CACHE_CLEAR_URL="https://drupal-benchmark.vercel.app/api/clear-cache"
+  DASHBOARD_URL="https://drupal-benchmark.vercel.app"
+fi
+
+echo "Using API endpoint: $API_URL"
+echo "Using cache clear endpoint: $CACHE_CLEAR_URL"
+echo "Dashboard URL: $DASHBOARD_URL"
+echo ""
 
 # Check if SUBMISSION_SECRET is set
 if [ -z "$SUBMISSION_SECRET" ]; then
-  # Try to read from .ddev/.env file as fallback
-  if [ -f ".ddev/.env" ]; then
-    export $(grep -v '^#' .ddev/.env | xargs)
-  fi
-
-  # Check again after trying to load from file
-  if [ -z "$SUBMISSION_SECRET" ]; then
-    echo "Error: SUBMISSION_SECRET environment variable is not set." >&2
-    echo "Please create a .ddev/.env file with:" >&2
-    echo "SUBMISSION_SECRET=your_secret_here" >&2
-    exit 1
-  fi
+  echo "Error: SUBMISSION_SECRET environment variable is not set." >&2
+  echo "Please create a .ddev/.env file with:" >&2
+  echo "SUBMISSION_SECRET=your_secret_here" >&2
+  exit 1
 fi
 
 ################################################################################
@@ -162,11 +170,13 @@ METADATA_JSON=$(gather_metadata)
 FINAL_JSON=$(jq -n --argjson metadata "$METADATA_JSON" --argjson stats "$(cat "$TEMP_STATS_FILE")" '$metadata + {stats: $stats}')
 
 echo "Submitting benchmark data to the central dashboard..."
+# --insecure is needed for self-signed certificates of DDEV.
 response_code=$(curl --silent --output /dev/null --write-out "%{http_code}" \
   -X POST "$API_URL" \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer $SUBMISSION_SECRET" \
-  -d "$FINAL_JSON")
+  -d "$FINAL_JSON" \
+  ${BENCHMARK_ENV:+--insecure})
 
 if [ "$response_code" -ge 200 ] && [ "$response_code" -lt 300 ]; then
   echo "Data submitted successfully! (Server responded with HTTP $response_code)"
@@ -175,7 +185,8 @@ if [ "$response_code" -ge 200 ] && [ "$response_code" -lt 300 ]; then
   echo "Clearing cache to refresh dashboard..."
   cache_response_code=$(curl --silent --output /dev/null --write-out "%{http_code}" \
     -X POST "$CACHE_CLEAR_URL" \
-    -H "Authorization: Bearer $SUBMISSION_SECRET")
+    -H "Authorization: Bearer $SUBMISSION_SECRET" \
+    ${BENCHMARK_ENV:+--insecure})
 
   if [ "$cache_response_code" -eq 200 ]; then
     echo "Cache cleared successfully!"
@@ -184,7 +195,7 @@ if [ "$response_code" -ge 200 ] && [ "$response_code" -lt 300 ]; then
   fi
 
   echo ""
-  echo "Check your results at: https://drupal-benchmark.vercel.app/"
+  echo "Check your results at: $DASHBOARD_URL"
 else
   echo "Error: Failed to submit data. The server responded with HTTP status $response_code." >&2
   echo "You can view the data payload that was not sent:" >&2

@@ -35,15 +35,17 @@ ddev start && ddev composer install && ddev drush si --yes --existing-config
 
 ## Developing frontend
 
-### Set database information
+### Enable development mode.
 
-Set database information at `.ddev/.env`. The database is hosted at [Supabase](https://supabase.com/).
-```
-NEXT_PUBLIC_SUPABASE_URL
-SUPABASE_SERVICE_KEY
+By default, benchmark results are sent to the public dashboard. For development, you can enable local mode:
+
+```sh
+echo "BENCHMARK_ENV=dev" >> .ddev/.env && ddev restart
 ```
 
-Ask the values from Hannes.
+This will make the benchmark script send data to your local Next.js frontend instead of the public endpoint.
+
+Data is still sent to [Supabase](https://supabase.com/), but into a separate dev database.
 
 ### Install frontend
 
