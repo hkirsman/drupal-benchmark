@@ -112,9 +112,9 @@ gather_metadata() {
     fi
   elif [[ "$ENVIRONMENT" == "lando" ]]; then
     # Check which web server process is actually running in Lando
-    if $ENVIRONMENT ssh -s appserver ps -ef | grep "nginx" | grep -v grep > /dev/null 2>&1; then
+    if $ENVIRONMENT ssh -s appserver_nginx -c "ps -ef" | grep "nginx" | grep -v grep > /dev/null 2>&1; then
       web_server="nginx"
-    elif $ENVIRONMENT ssh -s appserver ps -ef | grep "apache2" | grep -v grep > /dev/null 2>&1; then
+    elif $ENVIRONMENT ssh -s appserver -c "ps -ef" | grep "apache2" | grep -v grep > /dev/null 2>&1; then
       web_server="apache"
     fi
   fi
