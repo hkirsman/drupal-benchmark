@@ -17,7 +17,6 @@ export async function POST(request) {
 
     // Revalidate the home page and all pages
     revalidatePath('/', 'page');
-    revalidatePath('/api/submit', 'page');
 
     // Also revalidate the entire app
     revalidatePath('/', 'layout');
