@@ -101,6 +101,42 @@ gather_metadata() {
   git_commit=$(git rev-parse --short HEAD)
   drupal_version=$($ENVIRONMENT drush status --field=drupal-version)
 
+  # Web server detection
+  web_server="Unknown"
+  if [[ "$ENVIRONMENT" == "ddev" ]]; then
+    # Check which web server process is actually running in DDEV
+    if $ENVIRONMENT exec ps -ef | grep "nginx" | grep -v grep > /dev/null 2>&1; then
+      web_server="nginx"
+    elif $ENVIRONMENT exec ps -ef | grep "apache2" | grep -v grep > /dev/null 2>&1; then
+      web_server="apache"
+    fi
+  elif [[ "$ENVIRONMENT" == "lando" ]]; then
+    # Check which web server process is actually running in Lando
+    if $ENVIRONMENT ssh -s appserver ps -ef | grep "nginx" | grep -v grep > /dev/null 2>&1; then
+      web_server="nginx"
+    elif $ENVIRONMENT ssh -s appserver ps -ef | grep "apache2" | grep -v grep > /dev/null 2>&1; then
+      web_server="apache"
+    fi
+  fi
+
+  # DDEV/Lando version detection
+  dev_tool_version="Unknown"
+  if [[ "$ENVIRONMENT" == "ddev" ]]; then
+    version_output=$(ddev --version 2>/dev/null | head -1)
+    # Extract just the version number (e.g., "v1.24.4" from "ddev version v1.24.4")
+    dev_tool_version=$(echo "$version_output" | grep -o 'v[0-9]\+\.[0-9]\+\.[0-9]\+' | head -1)
+  elif [[ "$ENVIRONMENT" == "lando" ]]; then
+    version_output=$(lando version 2>/dev/null | head -1)
+    # Extract just the version number (e.g., "v3.10.0" from "lando v3.10.0")
+    dev_tool_version=$(echo "$version_output" | grep -o 'v[0-9]\+\.[0-9]\+\.[0-9]\+' | head -1)
+  fi
+
+  # Combine environment and version
+  environment_with_version="$ENVIRONMENT"
+  if [[ "$dev_tool_version" != "Unknown" ]]; then
+    environment_with_version="$ENVIRONMENT $dev_tool_version"
+  fi
+
   # Improved Docker version detection
   if command -v docker &> /dev/null; then
     docker_version=$(docker --version | sed 's/Docker version //' | sed 's/,.*//')
@@ -152,16 +188,17 @@ gather_metadata() {
   fi
 
   jq -n \
-    --arg environment "$ENVIRONMENT" \
+    --arg environment "$environment_with_version" \
     --arg user_name "$user_name" \
     --arg git_commit "$git_commit" \
     --arg drupal_version "$drupal_version" \
     --arg docker_version "$docker_version" \
+    --arg web_server "$web_server" \
     --arg db_type "$db_type" \
     --arg db_version "$db_version" \
     --arg php_version "$php_version" \
     --argjson system_info "$(jq -n --arg os "$os_name" --arg arch "$arch" --arg cpu "$cpu_info" --arg mem "${total_mem_gb}GB" '{os:$os, arch:$arch, cpu:$cpu, memory:$mem}')" \
-    '{metadata: {environment:$environment, user_name:$user_name, commit:$git_commit, drupal_version:$drupal_version, docker_version:$docker_version, database:{type:$db_type, version:$db_version}, php_version:$php_version, system:$system_info}}'
+    '{metadata: {environment:$environment, user_name:$user_name, commit:$git_commit, drupal_version:$drupal_version, docker_version:$docker_version, web_server:$web_server, database:{type:$db_type, version:$db_version}, php_version:$php_version, system:$system_info}}'
 }
 
 echo "Preparing data for submission..."

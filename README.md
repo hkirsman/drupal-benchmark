@@ -49,10 +49,8 @@ Data is still sent to [Supabase](https://supabase.com/), but into a separate dev
 
 ### Install frontend
 
-Install frontend (stopping frontend so `.ddev/.env` would be read again):
-
 ```sh
-cd next && ddev stop && ddev npm install
+cd next && ddev npm install
 ```
 
 ### Run frontend

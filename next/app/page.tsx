@@ -20,6 +20,7 @@ interface ProcessedBenchmark {
   dockerVersion: string;
   environment: string;
   drupalVersion: string;
+  webServer: string;
   databaseType: string;
   databaseVersion: string;
   phpVersion: string;
@@ -66,6 +67,7 @@ export default async function Home() {
       dockerVersion: record.metadata.docker_version || '-',
       environment: record.metadata.environment,
       drupalVersion: record.metadata.drupal_version,
+      webServer: record.metadata.web_server || 'Unknown',
       databaseType: record.metadata.database?.type || 'Unknown',
       databaseVersion: record.metadata.database?.version || 'Unknown',
       phpVersion: record.metadata.php_version || 'Unknown',

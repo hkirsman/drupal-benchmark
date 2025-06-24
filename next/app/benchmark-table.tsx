@@ -13,6 +13,7 @@ interface ProcessedBenchmark {
   dockerVersion: string;
   environment: string;
   drupalVersion: string;
+  webServer: string;
   databaseType: string;
   databaseVersion: string;
   phpVersion: string;
@@ -29,7 +30,7 @@ interface BenchmarkTableProps {
 }
 
 // Define the keys we can sort by
-type SortKey = 'createdAt' | 'username' | 'os' | 'cpu' | 'memory' | 'dockerVersion' | 'environment' | 'drupalVersion' | 'databaseType' | 'phpVersion' | 'numRequests' | 'requestsPerSecond' | 'avgResponseTime' | 'minResponseTime' | 'maxResponseTime';
+type SortKey = 'createdAt' | 'username' | 'os' | 'cpu' | 'memory' | 'dockerVersion' | 'environment' | 'drupalVersion' | 'webServer' | 'databaseType' | 'phpVersion' | 'numRequests' | 'requestsPerSecond' | 'avgResponseTime' | 'minResponseTime' | 'maxResponseTime';
 
 export default function BenchmarkTable({ data }: BenchmarkTableProps) {
   const [sortConfig, setSortConfig] = useState<{ key: SortKey; direction: 'asc' | 'desc' } | null>({ key: 'numRequests', direction: 'desc' });
@@ -78,6 +79,7 @@ export default function BenchmarkTable({ data }: BenchmarkTableProps) {
     { key: 'dockerVersion', label: 'Docker' },
     { key: 'environment', label: 'Env' },
     { key: 'drupalVersion', label: 'Drupal' },
+    { key: 'webServer', label: 'Web Server' },
     { key: 'databaseType', label: 'Database' },
     { key: 'phpVersion', label: 'PHP' },
     { key: 'numRequests', label: 'Total Requests', isNumeric: true },
@@ -95,7 +97,7 @@ export default function BenchmarkTable({ data }: BenchmarkTableProps) {
             {headers.map((header) => (
               <th
                 key={header.key}
-                className={`px-4 py-3 font-medium cursor-pointer ${header.isNumeric ? 'text-right' : ''}`}
+                className={`px-3 py-2 font-medium cursor-pointer ${header.isNumeric ? 'text-right' : ''}`}
                 onClick={() => requestSort(header.key)}
                 style={header.key === 'databaseType' ? { width: '160px' } : undefined}
               >
@@ -118,21 +120,22 @@ export default function BenchmarkTable({ data }: BenchmarkTableProps) {
 
             return (
               <tr key={item.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50">
-                <td className="px-4 py-3 whitespace-nowrap">{formattedDate}</td>
-                <td className="px-4 py-3 font-medium">{item.username}</td>
-                <td className="px-4 py-3">{item.os}</td>
-                <td className="px-4 py-3 truncate max-w-xs">{item.cpu}</td>
-                <td className="px-4 py-3">{item.memory}</td>
-                <td className="px-4 py-3 font-mono text-xs">{item.dockerVersion}</td>
-                <td className="px-4 py-3 font-mono">{item.environment}</td>
-                <td className="px-4 py-3 font-mono">{item.drupalVersion}</td>
-                <td className="px-4 py-3 font-mono" style={{ width: '160px' }}>{item.databaseType} {item.databaseVersion}</td>
-                <td className="px-4 py-3 font-mono">{item.phpVersion}</td>
-                <td className="px-4 py-3 font-mono text-right">{item.numRequests}</td>
-                <td className="px-4 py-3 font-mono text-right">{item.requestsPerSecond}</td>
-                <td className="px-4 py-3 font-mono text-right">{item.avgResponseTime}</td>
-                <td className="px-4 py-3 font-mono text-right">{item.minResponseTime}</td>
-                <td className="px-4 py-3 font-mono text-right">{item.maxResponseTime}</td>
+                <td className="px-3 py-2 whitespace-nowrap">{formattedDate}</td>
+                <td className="px-3 py-2 font-medium">{item.username}</td>
+                <td className="px-3 py-2">{item.os}</td>
+                <td className="px-3 py-2 truncate max-w-xs">{item.cpu}</td>
+                <td className="px-3 py-2">{item.memory}</td>
+                <td className="px-3 py-2 font-mono text-xs">{item.dockerVersion}</td>
+                <td className="px-3 py-2 font-mono">{item.environment}</td>
+                <td className="px-3 py-2 font-mono">{item.drupalVersion}</td>
+                <td className="px-3 py-2 font-mono">{item.webServer}</td>
+                <td className="px-3 py-2 font-mono" style={{ width: '160px' }}>{item.databaseType} {item.databaseVersion}</td>
+                <td className="px-3 py-2 font-mono">{item.phpVersion}</td>
+                <td className="px-3 py-2 font-mono text-right">{item.numRequests}</td>
+                <td className="px-3 py-2 font-mono text-right">{item.requestsPerSecond}</td>
+                <td className="px-3 py-2 font-mono text-right">{item.avgResponseTime}</td>
+                <td className="px-3 py-2 font-mono text-right">{item.minResponseTime}</td>
+                <td className="px-3 py-2 font-mono text-right">{item.maxResponseTime}</td>
               </tr>
             );
           })}
