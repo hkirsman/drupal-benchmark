@@ -17,6 +17,11 @@ use_dns_when_possible: true
 composer_version: "2"
 web_environment: []
 
+hooks:
+  post-start:
+    - exec: composer install --no-interaction
+    - exec: drush si --yes --existing-config
+
 # Expose Next.js app on port 3000
 web_extra_exposed_ports:
   - name: next-app
