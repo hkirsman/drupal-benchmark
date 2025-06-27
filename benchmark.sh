@@ -20,14 +20,14 @@ fi
 
 # Set URLs based on environment.
 if [[ "$BENCHMARK_ENV" == "dev" ]]; then
-  API_URL="https://frontend.drupal-benchmark.ddev.site/api/submit"
-  CACHE_CLEAR_URL="https://frontend.drupal-benchmark.ddev.site/api/clear-cache"
-  DASHBOARD_URL="https://frontend.drupal-benchmark.ddev.site"
+  API_URL="${BENCHMARK_BASE_URL_DEV}/api/submit"
+  CACHE_CLEAR_URL="${BENCHMARK_BASE_URL_DEV}/api/clear-cache"
+  DASHBOARD_URL="${BENCHMARK_BASE_URL_DEV}"
   echo "🔧 Development mode enabled"
 else
-  API_URL="https://drupal-benchmark.vercel.app/api/submit"
-  CACHE_CLEAR_URL="https://drupal-benchmark.vercel.app/api/clear-cache"
-  DASHBOARD_URL="https://drupal-benchmark.vercel.app"
+  API_URL="${BENCHMARK_BASE_URL_PROD}/api/submit"
+  CACHE_CLEAR_URL="${BENCHMARK_BASE_URL_PROD}/api/clear-cache"
+  DASHBOARD_URL="${BENCHMARK_BASE_URL_PROD}"
 fi
 
 echo "Using API endpoint: $API_URL"
