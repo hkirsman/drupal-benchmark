@@ -14,7 +14,7 @@ See the aforementioned mentioned template for more detailed documentation.
 
 - Clone the project locally
 - Optionally checkout a specific version, for example: `git checkout tags/v1.0`
-- Start your environment and build Drupal
+- Start your environment (Drupal will be automatically installed)
 - Run a benchmark with `./benchmark.sh lando` or `./benchmark.sh ddev`
 
 This project comes with [Lando](https://lando.dev/) and [DDEV](https://ddev.com/) environments preconfigured. Please find more detailed examples for running the benchmark in these environments below.
@@ -29,9 +29,11 @@ lando start && lando drush si --yes --existing-config
 ### DDEV
 
 ```sh
-ddev start && ddev composer install && ddev drush si --yes --existing-config
+ddev start
 ./benchmark.sh ddev
 ```
+
+> **Note:** DDEV automatically installs Composer dependencies and sets up Drupal with existing configuration via post-start hooks. No manual setup required!
 
 ## Developing frontend
 
