@@ -18,6 +18,7 @@ interface ProcessedBenchmark {
   databaseVersion: string;
   phpVersion: string;
   computerModel: string;
+  comment: string;
   numRequests: number;
   requestsPerSecond: number;
   avgResponseTime: number;
@@ -31,7 +32,7 @@ interface BenchmarkTableProps {
 }
 
 // Define the keys we can sort by
-type SortKey = 'createdAt' | 'username' | 'os' | 'cpu' | 'memory' | 'dockerVersion' | 'environment' | 'drupalVersion' | 'webServer' | 'databaseType' | 'phpVersion' | 'computerModel' | 'numRequests' | 'requestsPerSecond' | 'avgResponseTime' | 'minResponseTime' | 'maxResponseTime';
+type SortKey = 'createdAt' | 'username' | 'os' | 'cpu' | 'memory' | 'dockerVersion' | 'environment' | 'drupalVersion' | 'webServer' | 'databaseType' | 'phpVersion' | 'computerModel' | 'comment' | 'numRequests' | 'requestsPerSecond' | 'avgResponseTime' | 'minResponseTime' | 'maxResponseTime';
 
 export default function BenchmarkTable({ data }: BenchmarkTableProps) {
   const [sortConfig, setSortConfig] = useState<{ key: SortKey; direction: 'asc' | 'desc' } | null>({ key: 'numRequests', direction: 'desc' });
@@ -88,6 +89,7 @@ export default function BenchmarkTable({ data }: BenchmarkTableProps) {
     { key: 'avgResponseTime', label: 'Avg (ms)', isNumeric: true },
     { key: 'minResponseTime', label: 'Min (ms)', isNumeric: true },
     { key: 'maxResponseTime', label: 'Max (ms)', isNumeric: true },
+    { key: 'comment', label: 'Comment' },
     { key: 'username', label: 'User' },
   ];
 
@@ -138,6 +140,7 @@ export default function BenchmarkTable({ data }: BenchmarkTableProps) {
                 <td className="px-3 py-2 font-mono text-right">{item.avgResponseTime}</td>
                 <td className="px-3 py-2 font-mono text-right">{item.minResponseTime}</td>
                 <td className="px-3 py-2 font-mono text-right">{item.maxResponseTime}</td>
+                <td className="px-3 py-2">{item.comment}</td>
                 <td className="px-3 py-2 font-medium">{item.username}</td>
               </tr>
             );

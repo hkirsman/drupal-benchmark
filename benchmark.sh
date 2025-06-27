@@ -82,6 +82,16 @@ if [ -z "$COMPUTER_MODEL" ]; then
   COMPUTER_MODEL="Unknown"
 fi
 
+# Ask for additional context/comment
+echo ""
+echo "Optionally please enter any additional context or comments about this benchmark run:"
+echo "Examples: 'on battery', 'Performance mode', 'many browser tabs open', 'fresh restart', 'SSD vs HDD', 'WiFi vs Ethernet'"
+echo "Press Enter to skip if you don't want to add any comments."
+read -r BENCHMARK_COMMENT
+if [ -z "$BENCHMARK_COMMENT" ]; then
+  BENCHMARK_COMMENT=""
+fi
+
 if [[ "$ENVIRONMENT" == "ddev" ]]; then
   HOST_URL="https://drupal-benchmark.ddev.site"
 elif [[ "$ENVIRONMENT" == "lando" ]]; then
@@ -207,8 +217,9 @@ gather_metadata() {
     --arg db_version "$db_version" \
     --arg php_version "$php_version" \
     --arg computer_model "$COMPUTER_MODEL" \
+    --arg benchmark_comment "$BENCHMARK_COMMENT" \
     --argjson system_info "$(jq -n --arg os "$os_name" --arg arch "$arch" --arg cpu "$cpu_info" --arg mem "${total_mem_gb}GB" '{os:$os, arch:$arch, cpu:$cpu, memory:$mem}')" \
-    '{metadata: {environment:$environment, user_name:$user_name, commit:$git_commit, drupal_version:$drupal_version, docker_version:$docker_version, web_server:$web_server, database:{type:$db_type, version:$db_version}, php_version:$php_version, computer_model:$computer_model, system:$system_info}}'
+    '{metadata: {environment:$environment, user_name:$user_name, commit:$git_commit, drupal_version:$drupal_version, docker_version:$docker_version, web_server:$web_server, database:{type:$db_type, version:$db_version}, php_version:$php_version, computer_model:$computer_model, comment:$benchmark_comment, system:$system_info}}'
 }
 
 echo "Preparing data for submission..."

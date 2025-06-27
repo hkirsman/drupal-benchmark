@@ -25,6 +25,7 @@ interface ProcessedBenchmark {
   databaseVersion: string;
   phpVersion: string;
   computerModel: string;
+  comment: string;
   numRequests: number;
   requestsPerSecond: number;
   avgResponseTime: number;
@@ -73,6 +74,7 @@ export default async function Home() {
       databaseVersion: record.metadata.database?.version || 'Unknown',
       phpVersion: record.metadata.php_version || 'Unknown',
       computerModel: record.metadata.computer_model || 'Unknown',
+      comment: record.metadata.comment || '',
       numRequests: numRequests,
       requestsPerSecond: parseFloat(requestsPerSecond),
       avgResponseTime: avgResponseTime,
