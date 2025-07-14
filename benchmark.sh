@@ -4,7 +4,6 @@
 #
 # Configuration
 #
-# - SUBMISSION_SECRET: A simple password that the script sends to your API.
 # - BENCHMARK_ENV: Set to "dev" for development mode, or leave unset for production.
 #   These variables are loaded from .ddev/.env file (automatically loaded by DDEV).
 #
@@ -34,14 +33,6 @@ echo "Using API endpoint: $API_URL"
 echo "Using cache clear endpoint: $CACHE_CLEAR_URL"
 echo "Dashboard URL: $DASHBOARD_URL"
 echo ""
-
-# Check if SUBMISSION_SECRET is set
-if [ -z "$SUBMISSION_SECRET" ]; then
-  echo "Error: SUBMISSION_SECRET environment variable is not set." >&2
-  echo "Please create a .ddev/.env file with:" >&2
-  echo "SUBMISSION_SECRET=your_secret_here" >&2
-  exit 1
-fi
 
 ################################################################################
 #
@@ -232,7 +223,6 @@ echo "Submitting benchmark data to the central dashboard..."
 response_code=$(curl --silent --output /dev/null --write-out "%{http_code}" \
   -X POST "$API_URL" \
   -H "Content-Type: application/json" \
-  -H "Authorization: Bearer $SUBMISSION_SECRET" \
   -d "$FINAL_JSON" \
   ${BENCHMARK_ENV:+--insecure})
 
@@ -243,7 +233,6 @@ if [ "$response_code" -ge 200 ] && [ "$response_code" -lt 300 ]; then
   echo "Clearing cache to refresh dashboard..."
   cache_response_code=$(curl --silent --output /dev/null --write-out "%{http_code}" \
     -X POST "$CACHE_CLEAR_URL" \
-    -H "Authorization: Bearer $SUBMISSION_SECRET" \
     ${BENCHMARK_ENV:+--insecure})
 
   if [ "$cache_response_code" -eq 200 ]; then

@@ -8,17 +8,8 @@ const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
 // This function handles POST requests to /api/submit
 export async function POST(request) {
-  // 1. Get the Authorization header from the request
-  const authHeader = request.headers.get('authorization');
-  const SUBMISSION_SECRET = process.env.SUBMISSION_SECRET;
-
-  // 2. Validate the secret token
-  if (!authHeader || authHeader !== `Bearer ${SUBMISSION_SECRET}`) {
-    return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
-  }
-
   try {
-    // 3. Get the benchmark data from the request body
+    // Get the benchmark data from the request body
     const benchmarkData = await request.json();
 
     // Basic validation on the data itself
@@ -29,7 +20,7 @@ export async function POST(request) {
       );
     }
 
-    // 4. Insert the data into the 'benchmarks' table in Supabase
+    // Insert the data into the 'benchmarks' table in Supabase
     const { data, error } = await supabase
       .from('benchmarks')
       .insert([
@@ -49,7 +40,7 @@ export async function POST(request) {
       );
     }
 
-    // 5. Send a success response
+    // Send a success response
     return NextResponse.json(
       { message: 'Benchmark data submitted successfully.', data: data },
       { status: 201 } // 201 Created is the correct status code for a successful POST

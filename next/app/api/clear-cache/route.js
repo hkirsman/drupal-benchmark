@@ -1,41 +1,19 @@
 import { NextResponse } from 'next/server';
 import { revalidatePath } from 'next/cache';
 
-export async function POST(request) {
+export async function POST() {
   try {
-    // Get the authorization header
-    const authHeader = request.headers.get('authorization');
-    const expectedSecret = process.env.SUBMISSION_SECRET;
-
-    // Check if the request is authorized
-    if (!authHeader || !expectedSecret || authHeader !== `Bearer ${expectedSecret}`) {
-      return NextResponse.json(
-        { message: 'Unauthorized' },
-        { status: 401 }
-      );
-    }
-
-    // Revalidate the home page and all pages
-    revalidatePath('/', 'page');
-
-    // Also revalidate the entire app
-    revalidatePath('/', 'layout');
+    // Revalidate the home page to clear the cache
+    revalidatePath('/');
 
     return NextResponse.json(
-      {
-        message: 'Cache cleared successfully',
-        timestamp: new Date().toISOString()
-      },
+      { message: 'Cache cleared successfully.' },
       { status: 200 }
     );
-
   } catch (error) {
     console.error('Error clearing cache:', error);
     return NextResponse.json(
-      {
-        message: 'Error clearing cache',
-        error: error.message
-      },
+      { message: 'Error clearing cache.' },
       { status: 500 }
     );
   }
