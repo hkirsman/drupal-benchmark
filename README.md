@@ -15,7 +15,32 @@ See the aforementioned mentioned template for more detailed documentation.
 - Clone the project locally
 - Optionally checkout a specific version, for example: `git checkout tags/v1.0`
 - Start your environment (Drupal will be automatically installed)
-- Run a benchmark with `./benchmark.sh lando` or `./benchmark.sh ddev`
+
+## Benchmark Scripts
+
+This project provides two different benchmark scripts:
+
+### `benchmark.sh` - Local Benchmark Only
+Runs a simple benchmark locally without submitting results anywhere. Perfect for quick testing.
+
+```sh
+./benchmark.sh ddev
+# or
+./benchmark.sh lando
+```
+
+### `benchmark-submit.sh` - Benchmark with Submission
+Runs a benchmark and submits results to the community dashboard. This script:
+- Collects system metadata (OS, CPU, memory, versions, etc.)
+- Prompts for computer model and additional comments
+- Submits results to the central dashboard
+- Clears cache to refresh the dashboard
+
+```sh
+./benchmark-submit.sh ddev
+# or
+./benchmark-submit.sh lando
+```
 
 This project comes with [Lando](https://lando.dev/) and [DDEV](https://ddev.com/) environments preconfigured. Please find more detailed examples for running the benchmark in these environments below.
 
@@ -23,14 +48,16 @@ This project comes with [Lando](https://lando.dev/) and [DDEV](https://ddev.com/
 
 ```sh
 lando start && lando drush si --yes --existing-config
-./benchmark.sh lando
+./benchmark.sh lando          # Local testing only
+./benchmark-submit.sh lando   # Submit to dashboard
 ```
 
 ### DDEV
 
 ```sh
 ddev start
-./benchmark.sh ddev
+./benchmark.sh ddev           # Local testing only
+./benchmark-submit.sh ddev    # Submit to dashboard
 ```
 
 > **Note:** DDEV automatically installs Composer dependencies and sets up Drupal with existing configuration via post-start hooks. No manual setup required!
@@ -45,7 +72,7 @@ By default, benchmark results are sent to the public dashboard. For development,
 echo "BENCHMARK_ENV=dev" >> .ddev/.env && ddev restart
 ```
 
-This will make the benchmark script send data to your local Next.js frontend instead of the public endpoint.
+This will make the benchmark-submit script send data to your local Next.js frontend instead of the public endpoint.
 
 Data is still sent to [Supabase](https://supabase.com/), but into a separate dev database.
 
