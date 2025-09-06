@@ -32,12 +32,19 @@ tooling:
     cmd:
       - appserver: /app/.lando/xdebug.sh
     user: root
+  jq:
+    service: appserver
+    description: "Runs jq commands (jq is a lightweight and portable command-line JSON processor)."
+    cmd: "jq $@"
 
 services:
   database:
     # User random static high port for database connection.
     portforward: 34567
   appserver:
+    build_as_root:
+      - apt-get update -y
+      - apt-get install -y jq
     # Install dependencies when building lando.
     build:
       - "composer install"

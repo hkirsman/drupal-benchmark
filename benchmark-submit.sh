@@ -51,7 +51,7 @@ if [[ $# -lt 1 || ( "$1" != "ddev" && "$1" != "lando" ) ]]; then
   exit 1
 fi
 
-for tool in jq locust curl; do
+for tool in locust curl; do
   if ! command -v $tool &> /dev/null; then
       echo "Error: Required tool '$tool' is not installed. Please install it." >&2
       exit 1
