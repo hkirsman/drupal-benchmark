@@ -5,7 +5,6 @@ config:
   php: "8.0"
   via: nginx
   webroot: web
-  database: "mariadb:10.3"
   xdebug: off
   config:
     php: .lando/php.ini
@@ -35,6 +34,7 @@ tooling:
 
 services:
   database:
+    type: mariadb:10.3
     # User random static high port for database connection.
     portforward: 34567
   appserver:
@@ -99,10 +99,6 @@ services:
     type: mailhog
     hogfrom:
       - appserver
-  node:
-    type: "node:16"
-    build:
-      - "npm install"
 
 proxy:
   mailhog:
@@ -113,6 +109,9 @@ proxy:
   #   - kibana.lndo.site:5601
 
 events:
+  post-start:
+    - appserver: "composer install --no-interaction"
+    - appserver: "drush si --yes --existing-config"
   post-db-import:
     - appserver: "cd $LANDO_WEBROOT && drush cache:rebuild -y && drush @local user:login"
 
@@ -120,4 +119,4 @@ env_file:
   - .lando/.env
 
 # Tested with Lando version
-version: v3.6.1
+version: v3.25.6

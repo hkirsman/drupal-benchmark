@@ -39,7 +39,7 @@ Runs a benchmark and submits results to the community dashboard. This script:
 ```sh
 ./benchmark-submit.sh ddev
 # or
-./benchmark-submit.sh lando
+lando start && ./benchmark-submit.sh lando
 ```
 
 This project comes with [Lando](https://lando.dev/) and [DDEV](https://ddev.com/) environments preconfigured. Please find more detailed examples for running the benchmark in these environments below.
@@ -47,7 +47,7 @@ This project comes with [Lando](https://lando.dev/) and [DDEV](https://ddev.com/
 ### Lando
 
 ```sh
-lando start && lando drush si --yes --existing-config
+lando start
 ./benchmark.sh lando          # Local testing only
 ./benchmark-submit.sh lando   # Submit to dashboard
 ```
@@ -55,12 +55,13 @@ lando start && lando drush si --yes --existing-config
 ### DDEV
 
 ```sh
-ddev start
 ./benchmark.sh ddev           # Local testing only
 ./benchmark-submit.sh ddev    # Submit to dashboard
 ```
 
-> **Note:** DDEV automatically installs Composer dependencies and sets up Drupal with existing configuration via post-start hooks. No manual setup required!
+> **Note:** Both DDEV and Lando automatically installs Composer dependencies and
+set up Drupal with existing configuration via post-start hooks. No manual setup
+required!
 
 ## Developing frontend
 
