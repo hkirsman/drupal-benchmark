@@ -51,12 +51,12 @@ if [[ $# -lt 1 || ( "$1" != "ddev" && "$1" != "lando" ) ]]; then
   exit 1
 fi
 
-for tool in jq locust curl; do
-  if ! command -v $tool &> /dev/null; then
-      echo "Error: Required tool '$tool' is not installed. Please install it." >&2
-      exit 1
-  fi
-done
+# for tool in jq locust curl; do
+#   if ! command -v $tool &> /dev/null; then
+#       echo "Error: Required tool '$tool' is not installed. Please install it." >&2
+#       exit 1
+#   fi
+# done
 
 # --- 2. Run the Benchmark ---
 
@@ -92,7 +92,7 @@ fi
 echo "Drupal Benchmark"
 echo "--------------------------------------------------"
 echo "Getting Drupal user login URL for environment: $ENVIRONMENT..."
-login_url=$($ENVIRONMENT drush uli)
+login_url=$(drush uli)
 if [ -z "$login_url" ]; then
     echo "Error: Failed to get login URL from Drush. Is '$ENVIRONMENT' running?" >&2
     exit 1

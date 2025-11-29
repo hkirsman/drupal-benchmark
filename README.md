@@ -37,7 +37,7 @@ Runs a benchmark and submits results to the community dashboard. This script:
 - Clears cache to refresh the dashboard
 
 ```sh
-./benchmark-submit.sh ddev
+ddev benchmark-submit
 # or
 lando start && ./benchmark-submit.sh lando
 ```
@@ -56,7 +56,7 @@ lando start
 
 ```sh
 ./benchmark.sh ddev           # Local testing only
-./benchmark-submit.sh ddev    # Submit to dashboard
+ddev benchmark-submit         # Submit to dashboard
 ```
 
 > **Note:** Both DDEV and Lando automatically installs Composer dependencies and
