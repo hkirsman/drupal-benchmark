@@ -85,7 +85,7 @@ export default async function Home() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 p-4 sm:p-8">
-      <main className="max-w-[1450px] mx-auto">
+      <main className="max-w-[1450px] xl:max-w-[1680px] 2xl:max-w-[1920px] mx-auto">
         <div className="mb-8">
           <h1 className="text-2xl font-bold tracking-tight">Drupal Benchmark Results</h1>
         </div>
