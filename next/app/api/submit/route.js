@@ -3,7 +3,7 @@ import { NextResponse } from 'next/server';
 
 // Initialize the Supabase client. The credentials are only accessed on the server.
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseServiceKey = process.env.SUPABASE_SERVICE_KEY;
+const supabaseServiceKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
 const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
 // This function handles POST requests to /api/submit
