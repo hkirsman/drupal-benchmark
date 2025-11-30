@@ -16,7 +16,7 @@ export async function POST(request) {
     if (!benchmarkData || !benchmarkData.metadata || !benchmarkData.stats) {
       return NextResponse.json(
         { message: 'Invalid benchmark data format.' },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -28,7 +28,7 @@ export async function POST(request) {
           // Map your JSON object to your table columns
           metadata: benchmarkData.metadata,
           stats: benchmarkData.stats,
-        }
+        },
       ])
       .select(); // .select() returns the inserted data
 
@@ -36,22 +36,27 @@ export async function POST(request) {
       console.error('Supabase error:', error);
       return NextResponse.json(
         { message: 'Error saving benchmark data', details: error.message },
-        { status: 500 }
+        { status: 500 },
       );
     }
 
     // Send a success response
     return NextResponse.json(
-      { message: 'Benchmark data submitted successfully.', data: data },
-      { status: 201 } // 201 Created is the correct status code for a successful POST
+      { message: 'Benchmark data submitted successfully.', data },
+      { status: 201 }, // 201 Created is the correct status code for a successful POST
     );
-
   } catch (err) {
     // Handle cases where the request body is not valid JSON
     if (err instanceof SyntaxError) {
-      return NextResponse.json({ message: 'Invalid JSON body.' }, { status: 400 });
+      return NextResponse.json(
+        { message: 'Invalid JSON body.' },
+        { status: 400 },
+      );
     }
     console.error('An unexpected error occurred:', err);
-    return NextResponse.json({ message: 'An internal server error occurred.' }, { status: 500 });
+    return NextResponse.json(
+      { message: 'An internal server error occurred.' },
+      { status: 500 },
+    );
   }
 }

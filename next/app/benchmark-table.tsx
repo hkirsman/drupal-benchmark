@@ -1,4 +1,4 @@
-"use client"; // This is the most important line! It marks this as a Client Component.
+'use client';
 
 import { useState, useMemo } from 'react';
 
@@ -32,14 +32,35 @@ interface BenchmarkTableProps {
 }
 
 // Define the keys we can sort by
-type SortKey = 'createdAt' | 'username' | 'os' | 'cpu' | 'memory' | 'dockerVersion' | 'environment' | 'drupalVersion' | 'webServer' | 'databaseType' | 'phpVersion' | 'computerModel' | 'comment' | 'numRequests' | 'requestsPerSecond' | 'avgResponseTime' | 'minResponseTime' | 'maxResponseTime';
+type SortKey =
+  | 'createdAt'
+  | 'username'
+  | 'os'
+  | 'cpu'
+  | 'memory'
+  | 'dockerVersion'
+  | 'environment'
+  | 'drupalVersion'
+  | 'webServer'
+  | 'databaseType'
+  | 'phpVersion'
+  | 'computerModel'
+  | 'comment'
+  | 'numRequests'
+  | 'requestsPerSecond'
+  | 'avgResponseTime'
+  | 'minResponseTime'
+  | 'maxResponseTime';
 
 export default function BenchmarkTable({ data }: BenchmarkTableProps) {
-  const [sortConfig, setSortConfig] = useState<{ key: SortKey; direction: 'asc' | 'desc' } | null>({ key: 'numRequests', direction: 'desc' });
+  const [sortConfig, setSortConfig] = useState<{
+    key: SortKey;
+    direction: 'asc' | 'desc';
+  } | null>({ key: 'numRequests', direction: 'desc' });
 
   // useMemo will re-sort the data only when the data prop or the sortConfig changes
   const sortedData = useMemo(() => {
-    let sortableData = [...data];
+    const sortableData = [...data];
     if (sortConfig !== null) {
       sortableData.sort((a, b) => {
         const aValue = a[sortConfig.key];
@@ -58,10 +79,10 @@ export default function BenchmarkTable({ data }: BenchmarkTableProps) {
   }, [data, sortConfig]);
 
   const requestSort = (key: SortKey) => {
-    let direction: 'asc' | 'desc' = 'asc';
-    if (sortConfig && sortConfig.key === key && sortConfig.direction === 'asc') {
-      direction = 'desc';
-    }
+    const direction: 'asc' | 'desc' =
+      sortConfig && sortConfig.key === key && sortConfig.direction === 'asc'
+        ? 'desc'
+        : 'asc';
     setSortConfig({ key, direction });
   };
 
@@ -103,7 +124,9 @@ export default function BenchmarkTable({ data }: BenchmarkTableProps) {
                 key={header.key}
                 className={`px-3 py-2 font-medium cursor-pointer ${header.isNumeric ? 'text-right' : ''}`}
                 onClick={() => requestSort(header.key)}
-                style={header.key === 'databaseType' ? { width: '160px' } : undefined}
+                style={
+                  header.key === 'databaseType' ? { width: '160px' } : undefined
+                }
               >
                 {header.label}
                 {getSortArrow(header.key)}
@@ -123,23 +146,40 @@ export default function BenchmarkTable({ data }: BenchmarkTableProps) {
             const formattedDate = `${day}.${month}.${year} ${hours}:${minutes}:${seconds}`;
 
             return (
-              <tr key={item.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50">
+              <tr
+                key={item.id}
+                className="hover:bg-gray-50 dark:hover:bg-gray-700/50"
+              >
                 <td className="px-3 py-2 whitespace-nowrap">{formattedDate}</td>
                 <td className="px-3 py-2 font-medium">{item.computerModel}</td>
                 <td className="px-3 py-2">{item.os}</td>
                 <td className="px-3 py-2 truncate max-w-xs">{item.cpu}</td>
                 <td className="px-3 py-2">{item.memory}</td>
-                <td className="px-3 py-2 font-mono text-xs">{item.dockerVersion}</td>
+                <td className="px-3 py-2 font-mono text-xs">
+                  {item.dockerVersion}
+                </td>
                 <td className="px-3 py-2 font-mono">{item.environment}</td>
                 <td className="px-3 py-2 font-mono">{item.drupalVersion}</td>
                 <td className="px-3 py-2 font-mono">{item.webServer}</td>
-                <td className="px-3 py-2 font-mono" style={{ width: '160px' }}>{item.databaseType} {item.databaseVersion}</td>
+                <td className="px-3 py-2 font-mono" style={{ width: '160px' }}>
+                  {item.databaseType} {item.databaseVersion}
+                </td>
                 <td className="px-3 py-2 font-mono">{item.phpVersion}</td>
-                <td className="px-3 py-2 font-mono text-right">{item.numRequests}</td>
-                <td className="px-3 py-2 font-mono text-right">{item.requestsPerSecond}</td>
-                <td className="px-3 py-2 font-mono text-right">{item.avgResponseTime}</td>
-                <td className="px-3 py-2 font-mono text-right">{item.minResponseTime}</td>
-                <td className="px-3 py-2 font-mono text-right">{item.maxResponseTime}</td>
+                <td className="px-3 py-2 font-mono text-right">
+                  {item.numRequests}
+                </td>
+                <td className="px-3 py-2 font-mono text-right">
+                  {item.requestsPerSecond}
+                </td>
+                <td className="px-3 py-2 font-mono text-right">
+                  {item.avgResponseTime}
+                </td>
+                <td className="px-3 py-2 font-mono text-right">
+                  {item.minResponseTime}
+                </td>
+                <td className="px-3 py-2 font-mono text-right">
+                  {item.maxResponseTime}
+                </td>
                 <td className="px-3 py-2">{item.comment}</td>
                 <td className="px-3 py-2 font-medium">{item.username}</td>
               </tr>

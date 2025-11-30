@@ -35,7 +35,7 @@ interface ProcessedBenchmark {
 
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!
+  process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
 );
 
 export default async function Home() {
@@ -47,65 +47,86 @@ export default async function Home() {
 
   if (error) {
     console.error('Error fetching benchmarks:', error);
-    return <main className="p-20"><p className="text-red-500">Error fetching data. Check server console.</p></main>;
+    return (
+      <main className="p-20">
+        <p className="text-red-500">
+          Error fetching data. Check server console.
+        </p>
+      </main>
+    );
   }
 
   // The rest of your data processing logic remains exactly the same...
-  const processedData: ProcessedBenchmark[] = benchmarks.flatMap(record => {
-    const adminStats = record.stats.find((stat: any) => stat.name === '/admin/modules');
+  const processedData: ProcessedBenchmark[] = benchmarks.flatMap((record) => {
+    const adminStats = record.stats.find(
+      (stat: { name: string }) => stat.name === '/admin/modules',
+    );
     if (!adminStats) return [];
 
     const numRequests = adminStats.num_requests;
-    const avgResponseTime = Math.round(adminStats.total_response_time / numRequests);
+    const avgResponseTime = Math.round(
+      adminStats.total_response_time / numRequests,
+    );
     const requestsPerSecond = (numRequests / 30).toFixed(2);
 
-    return [{
-      id: record.id,
-      createdAt: record.created_at,
-      username: record.metadata.user_name || 'anonymous',
-      os: record.metadata.system.os,
-      cpu: record.metadata.system.cpu,
-      memory: record.metadata.system.memory,
-      dockerVersion: record.metadata.docker_version || '-',
-      environment: record.metadata.environment,
-      drupalVersion: record.metadata.drupal_version,
-      webServer: record.metadata.web_server || 'Unknown',
-      databaseType: record.metadata.database?.type || 'Unknown',
-      databaseVersion: record.metadata.database?.version || 'Unknown',
-      phpVersion: record.metadata.php_version || 'Unknown',
-      computerModel: record.metadata.computer_model || 'Unknown',
-      comment: record.metadata.comment || '',
-      numRequests: numRequests,
-      requestsPerSecond: parseFloat(requestsPerSecond),
-      avgResponseTime: avgResponseTime,
-      minResponseTime: Math.round(adminStats.min_response_time),
-      maxResponseTime: Math.round(adminStats.max_response_time),
-    }];
+    return [
+      {
+        id: record.id,
+        createdAt: record.created_at,
+        username: record.metadata.user_name || 'anonymous',
+        os: record.metadata.system.os,
+        cpu: record.metadata.system.cpu,
+        memory: record.metadata.system.memory,
+        dockerVersion: record.metadata.docker_version || '-',
+        environment: record.metadata.environment,
+        drupalVersion: record.metadata.drupal_version,
+        webServer: record.metadata.web_server || 'Unknown',
+        databaseType: record.metadata.database?.type || 'Unknown',
+        databaseVersion: record.metadata.database?.version || 'Unknown',
+        phpVersion: record.metadata.php_version || 'Unknown',
+        computerModel: record.metadata.computer_model || 'Unknown',
+        comment: record.metadata.comment || '',
+        numRequests,
+        requestsPerSecond: parseFloat(requestsPerSecond),
+        avgResponseTime,
+        minResponseTime: Math.round(adminStats.min_response_time),
+        maxResponseTime: Math.round(adminStats.max_response_time),
+      },
+    ];
   });
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 p-4 sm:p-8">
       <main className="max-w-[1450px] xl:max-w-[1680px] 2xl:max-w-[1920px] mx-auto">
         <div className="mb-8">
-          <h1 className="text-2xl font-bold tracking-tight">Drupal Benchmark Results</h1>
+          <h1 className="text-2xl font-bold tracking-tight">
+            Drupal Benchmark Results
+          </h1>
         </div>
 
         <BenchmarkTable data={processedData} />
 
-         <footer className="text-center mt-8 text-sm text-gray-500">
-            <div className="flex items-center justify-center gap-2 mb-2">
-              <a href="https://nextjs.org" target="_blank" rel="noopener noreferrer">
-                <Image
-                  className="dark:invert"
-                  src="/next.svg"
-                  alt="Next.js logo"
-                  width={40}
-                  height={10}
-                  priority
-                />
-              </a>
-            </div>
-            <p>Displaying {processedData.length} benchmark results. Click headers to sort.</p>
+        <footer className="text-center mt-8 text-sm text-gray-500">
+          <div className="flex items-center justify-center gap-2 mb-2">
+            <a
+              href="https://nextjs.org"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <Image
+                className="dark:invert"
+                src="/next.svg"
+                alt="Next.js logo"
+                width={40}
+                height={10}
+                priority
+              />
+            </a>
+          </div>
+          <p>
+            Displaying {processedData.length} benchmark results. Click headers
+            to sort.
+          </p>
         </footer>
       </main>
     </div>
