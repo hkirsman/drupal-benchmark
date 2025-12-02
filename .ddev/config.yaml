@@ -6,7 +6,8 @@ webserver_type: nginx-fpm
 router_http_port: "80"
 router_https_port: "443"
 xdebug_enabled: false
-additional_hostnames: []
+additional_hostnames:
+  - frontend
 additional_fqdns: []
 mariadb_version: "10.3"
 mysql_version: ""
@@ -15,6 +16,19 @@ mutagen_enabled: false
 use_dns_when_possible: true
 composer_version: "2"
 web_environment: []
+
+hooks:
+  post-start:
+    - exec: composer install --no-interaction
+    - exec: drush si --yes --existing-config
+
+# Expose Next.js app on port 3000
+web_extra_exposed_ports:
+  - name: next-app
+    container_port: 3000
+    http_port: 3000
+    https_port: 3001
+
 
 # Key features of ddev's config.yaml:
 
@@ -82,7 +96,7 @@ web_environment: []
 # Please take care with this because it can cause great confusion.
 
 # upload_dir: custom/upload/dir
-# would set the destination path for ddev import-files to <docroot>/custom/upload/dir 
+# would set the destination path for ddev import-files to <docroot>/custom/upload/dir
 
 # working_dir:
 #   web: /var/www/html
