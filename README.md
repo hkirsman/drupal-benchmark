@@ -2,6 +2,8 @@
 
 This project is based on the [template for Drupal projects](https://github.com/wunderio/drupal-project) by [Wunder](https://wunder.io/) and meant for benchmarking a local Drupal development environment (either [Lando](https://lando.dev/) or [DDEV](https://ddev.com/)) with the open source load testing tool [Locust](https://locust.io/).
 
+**View the live results on the [Public Dashboard](https://drupal-benchmark.vercel.app/).**
+
 See the aforementioned mentioned template for more detailed documentation.
 
 ## Requirements
@@ -30,10 +32,10 @@ Runs a simple benchmark locally without submitting results anywhere. Perfect for
 ```
 
 ### `benchmark-submit.sh` - Benchmark with Submission
-Runs a benchmark and submits results to the community dashboard. This script:
+Runs a benchmark and submits results to the [Public Dashboard](https://drupal-benchmark.vercel.app/). This script:
 - Collects system metadata (OS, CPU, memory, versions, etc.)
 - Prompts for computer model and additional comments
-- Submits results to the central dashboard
+- Submits results automatically
 - Clears cache to refresh the dashboard
 
 ```sh
