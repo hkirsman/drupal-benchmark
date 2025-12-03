@@ -106,7 +106,7 @@ echo "Running Locust benchmark for 30 seconds using Docker ($LOCUST_IMAGE)..."
 
 # Run Locust via Docker
 # --network host: allows container to access the ddev/lando URLs on localhost
-# -v $(pwd): mounts current folder so container can find locustfile.py
+# -v $(pwd):/mnt/locust: mounts current folder to /mnt/locust in the container so it can find locustfile.py
 docker run --rm \
   --network host \
   -v "$(pwd):/mnt/locust" \
