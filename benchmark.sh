@@ -11,23 +11,42 @@ if [[ $# -lt 1 || ( "$1" != "ddev" && "$1" != "lando" ) ]]; then
   exit 1
 fi
 
+ENVIRONMENT=$1
+
 if ! command -v docker &> /dev/null; then
     echo "Error: Required tool 'docker' is not installed." >&2
     exit 1
 fi
 
-# Get the Drupal login URL with drush.
-login_url="$($1 drush uli)"
-
-# Determine host based on environment
-if [[ "$1" == "ddev" ]]; then
+# Determine host URL based on environment.
+if [[ "$ENVIRONMENT" == "ddev" ]]; then
   HOST_URL="https://drupal-benchmark.ddev.site"
-elif [[ "$1" == "lando" ]]; then
+elif [[ "$ENVIRONMENT" == "lando" ]]; then
   HOST_URL="https://drupal-benchmark.lndo.site"
 fi
 
-echo "Running Locust benchmark using Docker image: $LOCUST_IMAGE"
+echo "Drupal Benchmark"
+echo "--------------------------------------------------"
 
+echo "Getting Drupal user login URL for environment: $ENVIRONMENT..."
+login_url=$($ENVIRONMENT drush uli)
+if [ -z "$login_url" ]; then
+    echo "Error: Failed to get login URL from Drush. Is '$ENVIRONMENT' running?" >&2
+    exit 1
+fi
+
+# Clear Drupal caches so the benchmark always includes the first uncached request.
+echo "Clearing Drupal cache via Drush before running Locust..."
+if ! $ENVIRONMENT drush cr; then
+  echo "Error: Failed to clear Drupal cache. Aborting benchmark." >&2
+  exit 1
+fi
+
+echo "Running Locust benchmark for 30 seconds using Docker ($LOCUST_IMAGE)..."
+
+# Run Locust via Docker
+# --network host: allows container to access the ddev/lando URLs on localhost
+# -v $(pwd):/mnt/locust: mounts current folder to /mnt/locust in the container so it can find locustfile.py
 docker run --rm \
   --network host \
   -v "$(pwd):/mnt/locust" \
