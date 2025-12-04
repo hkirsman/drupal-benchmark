@@ -8,8 +8,7 @@ See the aforementioned mentioned template for more detailed documentation.
 
 ## Requirements
 
-- [Python 3.13.1](https://www.python.org/downloads/release/python-3131/) (recommended install via [pyenv](https://github.com/pyenv/pyenv) with `pyenv install`)
-- [Locust](https://locust.io/) (install with `pip install locust`)
+- [Docker](https://www.docker.com/)
 - [Lando](https://lando.dev/) or [DDEV](https://ddev.com/)
 
 ## Getting started

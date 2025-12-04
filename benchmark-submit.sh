@@ -12,6 +12,9 @@
 #
 ################################################################################
 
+# Lock the Locust image name and version to ensure stability.
+LOCUST_IMAGE="locustio/locust:2.42.6"
+
 # Load environment variables from .ddev/.env if it exists
 if [ -f ".ddev/.env" ]; then
   export $(grep -v '^#' .ddev/.env | xargs)
@@ -51,7 +54,7 @@ if [[ $# -lt 1 || ( "$1" != "ddev" && "$1" != "lando" ) ]]; then
   exit 1
 fi
 
-for tool in jq locust curl; do
+for tool in jq docker curl; do
   if ! command -v $tool &> /dev/null; then
       echo "Error: Required tool '$tool' is not installed. Please install it." >&2
       exit 1
@@ -62,7 +65,8 @@ done
 
 ENVIRONMENT=$1
 TEMP_STATS_FILE=$(mktemp)
-trap 'rm -f -- "$TEMP_STATS_FILE"' EXIT # Ensure temp file is deleted on exit
+# Ensure temp file is deleted on exit.
+trap 'rm -f -- "$TEMP_STATS_FILE"' EXIT
 
 # Ask for computer model information early
 echo ""
@@ -98,8 +102,27 @@ if [ -z "$login_url" ]; then
     exit 1
 fi
 
-echo "Running Locust benchmark for 30 seconds..."
-ULI="$login_url" locust --headless --only-summary --users 1 --spawn-rate 1 --run-time 30 --stop-timeout 5 --json -H "$HOST_URL" > "$TEMP_STATS_FILE"
+echo "Running Locust benchmark for 30 seconds using Docker ($LOCUST_IMAGE)..."
+
+# Run Locust via Docker
+# --network host: allows container to access the ddev/lando URLs on localhost
+# -v $(pwd):/mnt/locust: mounts current folder to /mnt/locust in the container so it can find locustfile.py
+docker run --rm \
+  --network host \
+  -v "$(pwd):/mnt/locust" \
+  -e ULI="$login_url" \
+  "$LOCUST_IMAGE" \
+  -f /mnt/locust/locustfile.py \
+  --headless \
+  --only-summary \
+  --users 1 \
+  --spawn-rate 1 \
+  --run-time 30 \
+  --stop-timeout 5 \
+  --json \
+  -H "$HOST_URL" \
+  > "$TEMP_STATS_FILE"
+
 echo "Benchmark finished."
 echo "--------------------------------------------------"
 
