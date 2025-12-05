@@ -7,19 +7,22 @@
 
 // Database settings, overridden per environment.
 $databases = [];
-$databases['default']['default'] = [
-  'database' => $_ENV['DB_NAME_DRUPAL'],
-  'username' => $_ENV['DB_USER_DRUPAL'],
-  'password' => $_ENV['DB_PASS_DRUPAL'],
-  'prefix' => '',
-  'host' => $_ENV['DB_HOST_DRUPAL'],
-  'port' => '3306',
-  'namespace' => 'Drupal\\Core\\Database\\Driver\\mysql',
-  'driver' => 'mysql',
-];
 
-// Salt for one-time login links, cancel links, form tokens, etc.
-$settings['hash_salt'] = $_ENV['HASH_SALT'];
+if (getenv('LANDO')) {
+  $databases['default']['default'] = [
+    'database' => $_ENV['DB_NAME_DRUPAL'],
+    'username' => $_ENV['DB_USER_DRUPAL'],
+    'password' => $_ENV['DB_PASS_DRUPAL'],
+    'prefix' => '',
+    'host' => $_ENV['DB_HOST_DRUPAL'],
+    'port' => '3306',
+    'namespace' => 'Drupal\\Core\\Database\\Driver\\mysql',
+    'driver' => 'mysql',
+  ];
+
+  // Salt for one-time login links, cancel links, form tokens, etc.
+  $settings['hash_salt'] = $_ENV['HASH_SALT'];
+}
 
 // Location of the site configuration files.
 $settings['config_sync_directory'] = '../config/sync';
