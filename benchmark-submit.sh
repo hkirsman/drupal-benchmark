@@ -87,6 +87,7 @@ if [ -z "$BENCHMARK_COMMENT" ]; then
   BENCHMARK_COMMENT=""
 fi
 
+# Determine host URL based on environment.
 if [[ "$ENVIRONMENT" == "ddev" ]]; then
   HOST_URL="https://drupal-benchmark.ddev.site"
 elif [[ "$ENVIRONMENT" == "lando" ]]; then
@@ -95,11 +96,19 @@ fi
 
 echo "Drupal Benchmark"
 echo "--------------------------------------------------"
+
 echo "Getting Drupal user login URL for environment: $ENVIRONMENT..."
 login_url=$($ENVIRONMENT drush uli)
 if [ -z "$login_url" ]; then
     echo "Error: Failed to get login URL from Drush. Is '$ENVIRONMENT' running?" >&2
     exit 1
+fi
+
+# Clear Drupal caches so the benchmark always includes the first uncached request.
+echo "Clearing Drupal cache via Drush before running Locust..."
+if ! $ENVIRONMENT drush cr; then
+  echo "Error: Failed to clear Drupal cache. Aborting benchmark." >&2
+  exit 1
 fi
 
 echo "Running Locust benchmark for 30 seconds using Docker ($LOCUST_IMAGE)..."
