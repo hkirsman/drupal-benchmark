@@ -64,7 +64,7 @@ switch ($env) {
     $settings['skip_permissions_hardening'] = TRUE;
     // Skip trusted host pattern.
     $settings['trusted_host_patterns'] = ['.*'];
-    // Debug mode on lando.
+    // Enable CSS and JS preprocess.
     $config['system.performance']['css']['preprocess'] = TRUE;
     $config['system.performance']['js']['preprocess'] = TRUE;
     break;
