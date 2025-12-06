@@ -58,19 +58,15 @@ switch ($env) {
 
   case 'local':
   case 'lando':
+  case 'ddev':
     $settings['simple_environment_indicator'] = 'DarkGreen Local';
     // Skip file system permissions hardening.
     $settings['skip_permissions_hardening'] = TRUE;
     // Skip trusted host pattern.
     $settings['trusted_host_patterns'] = ['.*'];
     // Debug mode on lando.
-    $settings['container_yamls'][] = DRUPAL_ROOT . '/sites/development.services.yml';
-    $config['system.performance']['css']['preprocess'] = FALSE;
-    $config['system.performance']['js']['preprocess'] = FALSE;
-    $settings['cache']['bins']['render'] = 'cache.backend.null';
-    $settings['cache']['bins']['dynamic_page_cache'] = 'cache.backend.null';
-    $settings['cache']['bins']['page'] = 'cache.backend.null';
-    $settings['extension_discovery_scan_tests'] = FALSE;
+    $config['system.performance']['css']['preprocess'] = TRUE;
+    $config['system.performance']['js']['preprocess'] = TRUE;
     break;
 
   default:
