@@ -7,17 +7,18 @@
 
 // Database settings, overridden per environment.
 $databases = [];
+$databases['default']['default']['prefix'] = '';
+$databases['default']['default']['port'] = '3306';
+$databases['default']['default']['namespace'] = 'Drupal\\Core\\Database\\Driver\\mysql';
+$databases['default']['default']['driver'] = 'mysql';
 
-$databases['default']['default'] = [
-  'database' => $_ENV['DB_NAME_DRUPAL'] ?? '',
-  'username' => $_ENV['DB_USER_DRUPAL'] ?? '',
-  'password' => $_ENV['DB_PASS_DRUPAL'] ?? '',
-  'prefix' => '',
-  'host' => $_ENV['DB_HOST_DRUPAL'] ?? '',
-  'port' => '3306',
-  'namespace' => 'Drupal\\Core\\Database\\Driver\\mysql',
-  'driver' => 'mysql',
-];
+// Lando settings.
+if (getenv('LANDO') === 'ON') {
+  $databases['default']['default']['database'] = $_ENV['DB_NAME_DRUPAL'] ?? '';
+  $databases['default']['default']['username'] = $_ENV['DB_USER_DRUPAL'] ?? '';
+  $databases['default']['default']['password'] = $_ENV['DB_PASS_DRUPAL'] ?? '';
+  $databases['default']['default']['host'] = $_ENV['DB_HOST_DRUPAL'] ?? '';
+}
 
 // Salt for one-time login links, cancel links, form tokens, etc.
 $settings['hash_salt'] = $_ENV['HASH_SALT'] ?? '';
