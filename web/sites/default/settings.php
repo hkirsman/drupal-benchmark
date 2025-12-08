@@ -7,19 +7,21 @@
 
 // Database settings, overridden per environment.
 $databases = [];
-$databases['default']['default'] = [
-  'database' => $_ENV['DB_NAME_DRUPAL'],
-  'username' => $_ENV['DB_USER_DRUPAL'],
-  'password' => $_ENV['DB_PASS_DRUPAL'],
-  'prefix' => '',
-  'host' => $_ENV['DB_HOST_DRUPAL'],
-  'port' => '3306',
-  'namespace' => 'Drupal\\Core\\Database\\Driver\\mysql',
-  'driver' => 'mysql',
-];
+$databases['default']['default']['prefix'] = '';
+$databases['default']['default']['port'] = '3306';
+$databases['default']['default']['namespace'] = 'Drupal\\Core\\Database\\Driver\\mysql';
+$databases['default']['default']['driver'] = 'mysql';
+
+// Lando settings.
+if (getenv('LANDO') === 'ON') {
+  $databases['default']['default']['database'] = $_ENV['DB_NAME_DRUPAL'] ?? '';
+  $databases['default']['default']['username'] = $_ENV['DB_USER_DRUPAL'] ?? '';
+  $databases['default']['default']['password'] = $_ENV['DB_PASS_DRUPAL'] ?? '';
+  $databases['default']['default']['host'] = $_ENV['DB_HOST_DRUPAL'] ?? '';
+}
 
 // Salt for one-time login links, cancel links, form tokens, etc.
-$settings['hash_salt'] = $_ENV['HASH_SALT'];
+$settings['hash_salt'] = $_ENV['HASH_SALT'] ?? '';
 
 // Location of the site configuration files.
 $settings['config_sync_directory'] = '../config/sync';
@@ -57,19 +59,15 @@ switch ($env) {
 
   case 'local':
   case 'lando':
+  case 'ddev':
     $settings['simple_environment_indicator'] = 'DarkGreen Local';
     // Skip file system permissions hardening.
     $settings['skip_permissions_hardening'] = TRUE;
     // Skip trusted host pattern.
     $settings['trusted_host_patterns'] = ['.*'];
-    // Debug mode on lando.
-    $settings['container_yamls'][] = DRUPAL_ROOT . '/sites/development.services.yml';
-    $config['system.performance']['css']['preprocess'] = FALSE;
-    $config['system.performance']['js']['preprocess'] = FALSE;
-    $settings['cache']['bins']['render'] = 'cache.backend.null';
-    $settings['cache']['bins']['dynamic_page_cache'] = 'cache.backend.null';
-    $settings['cache']['bins']['page'] = 'cache.backend.null';
-    $settings['extension_discovery_scan_tests'] = FALSE;
+    // Enable CSS and JS preprocess.
+    $config['system.performance']['css']['preprocess'] = TRUE;
+    $config['system.performance']['js']['preprocess'] = TRUE;
     break;
 
   default:
