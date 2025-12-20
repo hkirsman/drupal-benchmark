@@ -89,7 +89,6 @@ export default async function Home() {
       error = new Error(
         `Supabase query error: ${result.error.message || 'Unknown error'}`,
       );
-      console.error('Supabase query error:', error);
     } else {
       benchmarks = result.data || [];
     }
