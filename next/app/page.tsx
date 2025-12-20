@@ -88,6 +88,7 @@ export default async function Home() {
     if (result.error) {
       error = new Error(
         `Supabase query error: ${result.error.message || 'Unknown error'}`,
+        { cause: result.error },
       );
     } else {
       benchmarks = result.data || [];
@@ -100,15 +101,16 @@ export default async function Home() {
       );
       error = new Error(
         'Supabase configuration is missing. Please configure Supabase environment variables.',
+        { cause: err },
       );
     } else if (err instanceof Error) {
-      // Convert caught exceptions to Error type for consistency
+      // Store the original error directly to preserve stack trace and type information
       console.error('Error initializing Supabase:', err);
       error = err;
     } else {
       // Handle non-Error exceptions (shouldn't happen, but TypeScript requires it)
       console.error('Unexpected error type:', err);
-      error = new Error('An unexpected error occurred');
+      error = new Error('An unexpected error occurred', { cause: err });
     }
   }
 
