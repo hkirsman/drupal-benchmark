@@ -1,5 +1,6 @@
 {
     "name": "wunderio/drupal-project",
+    "version": "1.0",
     "description": "Wunder's template for Drupal 9 projects.",
     "type": "project",
     "license": "GPL-2.0-or-later",

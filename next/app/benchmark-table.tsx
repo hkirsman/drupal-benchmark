@@ -19,6 +19,7 @@ interface ProcessedBenchmark {
   phpVersion: string;
   computerModel: string;
   comment: string;
+  benchmarkVersion: string;
   numRequests: number;
   requestsPerSecond: number;
   avgResponseTime: number;
@@ -46,6 +47,7 @@ type SortKey =
   | 'phpVersion'
   | 'computerModel'
   | 'comment'
+  | 'benchmarkVersion'
   | 'numRequests'
   | 'requestsPerSecond'
   | 'avgResponseTime'
@@ -112,6 +114,7 @@ export default function BenchmarkTable({ data }: BenchmarkTableProps) {
     { key: 'maxResponseTime', label: 'Max (ms)', isNumeric: true },
     { key: 'comment', label: 'Comment' },
     { key: 'username', label: 'User' },
+    { key: 'benchmarkVersion', label: 'Benchmark version' },
   ];
 
   return (
@@ -182,6 +185,7 @@ export default function BenchmarkTable({ data }: BenchmarkTableProps) {
                 </td>
                 <td className="px-3 py-2">{item.comment}</td>
                 <td className="px-3 py-2 font-medium">{item.username}</td>
+                <td className="px-3 py-2 font-mono">{item.benchmarkVersion}</td>
               </tr>
             );
           })}
