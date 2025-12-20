@@ -32,15 +32,15 @@ export function getSupabaseClient(): SupabaseClient {
   }
 
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const supabaseServiceKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
+  const supabasePublishableKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
 
-  if (!supabaseUrl || !supabaseServiceKey) {
+  if (!supabaseUrl || !supabasePublishableKey) {
     throw new SupabaseConfigurationError(
       'Supabase configuration is missing. Please set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY environment variables.',
     );
   }
 
   // Create and cache the client
-  supabaseClient = createClient(supabaseUrl, supabaseServiceKey);
+  supabaseClient = createClient(supabaseUrl, supabasePublishableKey);
   return supabaseClient;
 }
