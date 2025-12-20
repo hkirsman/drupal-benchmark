@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getSupabaseClient } from '@/lib/supabase';
+import { getSupabaseClient, SupabaseConfigurationError } from '@/lib/supabase';
 
 // This function handles POST requests to /api/submit
 export async function POST(request) {
@@ -52,10 +52,8 @@ export async function POST(request) {
       );
     }
     // Handle missing Supabase configuration
-    if (
-      err instanceof Error &&
-      err.message.includes('Supabase configuration is missing')
-    ) {
+    if (err instanceof SupabaseConfigurationError) {
+      console.error('Supabase configuration error:', err);
       return NextResponse.json(
         {
           message:
