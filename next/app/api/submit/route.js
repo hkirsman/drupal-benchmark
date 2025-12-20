@@ -1,8 +1,5 @@
 import { NextResponse } from 'next/server';
-import {
-  getSupabaseClient,
-  SupabaseConfigurationError,
-} from '@/lib/supabase';
+import { getSupabaseClient, SupabaseConfigurationError } from '@/lib/supabase';
 
 // This function handles POST requests to /api/submit
 export async function POST(request) {

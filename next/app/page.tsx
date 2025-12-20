@@ -86,8 +86,15 @@ export default async function Home() {
       .select('*')
       .order('created_at', { ascending: false });
 
-    benchmarks = result.data || [];
-    error = result.error;
+    // Handle Supabase query errors (result.error is a PostgrestError, not a standard Error)
+    if (result.error) {
+      error = new Error(
+        `Supabase query error: ${result.error.message || 'Unknown error'}`,
+      );
+      console.error('Supabase query error:', result.error);
+    } else {
+      benchmarks = result.data || [];
+    }
   } catch (err) {
     // Handle missing environment variables during build
     if (err instanceof SupabaseConfigurationError) {
@@ -95,9 +102,14 @@ export default async function Home() {
         'Supabase configuration missing during build. This is expected if env vars are not set.',
       );
       benchmarks = [];
-    } else {
+    } else if (err instanceof Error) {
+      // Convert caught exceptions to Error type for consistency
       console.error('Error initializing Supabase:', err);
       error = err;
+    } else {
+      // Handle non-Error exceptions (shouldn't happen, but TypeScript requires it)
+      console.error('Unexpected error type:', err);
+      error = new Error('An unexpected error occurred');
     }
   }
 
