@@ -1,10 +1,19 @@
 import { createClient } from '@supabase/supabase-js';
 import { NextResponse } from 'next/server';
 
-// Initialize the Supabase client. The credentials are only accessed on the server.
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
-const supabaseServiceKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
-const supabase = createClient(supabaseUrl, supabaseServiceKey);
+// Helper function to get Supabase client (lazy initialization)
+function getSupabaseClient() {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseServiceKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
+
+  if (!supabaseUrl || !supabaseServiceKey) {
+    throw new Error(
+      'Supabase configuration is missing. Please set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY environment variables.',
+    );
+  }
+
+  return createClient(supabaseUrl, supabaseServiceKey);
+}
 
 // This function handles POST requests to /api/submit
 export async function POST(request) {
@@ -19,6 +28,9 @@ export async function POST(request) {
         { status: 400 },
       );
     }
+
+    // Initialize Supabase client (lazy initialization to avoid build-time errors)
+    const supabase = getSupabaseClient();
 
     // Insert the data into the 'benchmarks' table in Supabase
     const { data, error } = await supabase
@@ -51,6 +63,13 @@ export async function POST(request) {
       return NextResponse.json(
         { message: 'Invalid JSON body.' },
         { status: 400 },
+      );
+    }
+    // Handle missing Supabase configuration
+    if (err instanceof Error && err.message.includes('Supabase configuration is missing')) {
+      return NextResponse.json(
+        { message: 'Server configuration error. Please contact the administrator.' },
+        { status: 500 },
       );
     }
     console.error('An unexpected error occurred:', err);

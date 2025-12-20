@@ -33,17 +33,46 @@ interface ProcessedBenchmark {
   maxResponseTime: number;
 }
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
-);
+// Helper function to get Supabase client (lazy initialization)
+function getSupabaseClient() {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseServiceKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
+
+  if (!supabaseUrl || !supabaseServiceKey) {
+    throw new Error(
+      'Supabase configuration is missing. Please set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY environment variables.',
+    );
+  }
+
+  return createClient(supabaseUrl, supabaseServiceKey);
+}
 
 export default async function Home() {
-  // REMOVE THE .context() CALL FROM THIS QUERY
-  const { data: benchmarks, error } = await supabase
-    .from('benchmarks')
-    .select('*')
-    .order('created_at', { ascending: false });
+  // Initialize Supabase client (lazy initialization to avoid build-time errors)
+  let benchmarks = [];
+  let error = null;
+
+  try {
+    const supabase = getSupabaseClient();
+
+    // REMOVE THE .context() CALL FROM THIS QUERY
+    const result = await supabase
+      .from('benchmarks')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    benchmarks = result.data || [];
+    error = result.error;
+  } catch (err) {
+    // Handle missing environment variables during build
+    if (err instanceof Error && err.message.includes('Supabase configuration is missing')) {
+      console.warn('Supabase configuration missing during build. This is expected if env vars are not set.');
+      benchmarks = [];
+    } else {
+      console.error('Error initializing Supabase:', err);
+      error = err;
+    }
+  }
 
   if (error) {
     console.error('Error fetching benchmarks:', error);
