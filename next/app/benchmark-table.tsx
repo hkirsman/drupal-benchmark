@@ -125,7 +125,11 @@ export default function BenchmarkTable({ data }: BenchmarkTableProps) {
                 className={`px-3 py-2 font-medium cursor-pointer ${header.isNumeric ? 'text-right' : ''}`}
                 onClick={() => requestSort(header.key)}
                 style={
-                  header.key === 'databaseType' ? { width: '160px' } : undefined
+                  header.key === 'databaseType'
+                    ? { width: '160px' }
+                    : header.key === 'cpu'
+                      ? { width: '320px' }
+                      : undefined
                 }
               >
                 {header.label}
@@ -153,7 +157,7 @@ export default function BenchmarkTable({ data }: BenchmarkTableProps) {
                 <td className="px-3 py-2 whitespace-nowrap">{formattedDate}</td>
                 <td className="px-3 py-2 font-medium">{item.computerModel}</td>
                 <td className="px-3 py-2">{item.os}</td>
-                <td className="px-3 py-2 truncate max-w-xs">{item.cpu}</td>
+                <td className="px-3 py-2 truncate" style={{ width: '320px' }}>{item.cpu}</td>
                 <td className="px-3 py-2">{item.memory}</td>
                 <td className="px-3 py-2 font-mono text-xs">
                   {item.dockerVersion}
