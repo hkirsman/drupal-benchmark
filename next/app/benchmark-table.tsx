@@ -92,6 +92,17 @@ export default function BenchmarkTable({ data }: BenchmarkTableProps) {
     return sortConfig.direction === 'asc' ? ' ▲' : ' ▼';
   };
 
+  // Helper function to get column width style
+  const getColumnWidth = (key: SortKey): { width: string } | undefined => {
+    if (key === 'databaseType') {
+      return { width: '160px' };
+    }
+    if (key === 'cpu') {
+      return { width: '320px' };
+    }
+    return undefined;
+  };
+
   // An array to define our table headers for easier mapping
   const headers: { key: SortKey; label: string; isNumeric?: boolean }[] = [
     { key: 'createdAt', label: 'Date' },
@@ -124,13 +135,7 @@ export default function BenchmarkTable({ data }: BenchmarkTableProps) {
                 key={header.key}
                 className={`px-3 py-2 font-medium cursor-pointer ${header.isNumeric ? 'text-right' : ''}`}
                 onClick={() => requestSort(header.key)}
-                style={
-                  header.key === 'databaseType'
-                    ? { width: '160px' }
-                    : header.key === 'cpu'
-                      ? { width: '320px' }
-                      : undefined
-                }
+                style={getColumnWidth(header.key)}
               >
                 {header.label}
                 {getSortArrow(header.key)}
@@ -157,7 +162,9 @@ export default function BenchmarkTable({ data }: BenchmarkTableProps) {
                 <td className="px-3 py-2 whitespace-nowrap">{formattedDate}</td>
                 <td className="px-3 py-2 font-medium">{item.computerModel}</td>
                 <td className="px-3 py-2">{item.os}</td>
-                <td className="px-3 py-2 truncate" style={{ width: '320px' }}>{item.cpu}</td>
+                <td className="px-3 py-2 truncate" style={{ width: '320px' }}>
+                  {item.cpu}
+                </td>
                 <td className="px-3 py-2">{item.memory}</td>
                 <td className="px-3 py-2 font-mono text-xs">
                   {item.dockerVersion}
