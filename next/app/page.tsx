@@ -1,8 +1,5 @@
 import Image from 'next/image';
-import {
-  getSupabaseClient,
-  SupabaseConfigurationError,
-} from '@/lib/supabase';
+import { getSupabaseClient, SupabaseConfigurationError } from '@/lib/supabase';
 import BenchmarkTable from './benchmark-table';
 
 // -----------------------------------------------------------------------------
