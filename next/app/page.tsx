@@ -65,8 +65,13 @@ export default async function Home() {
     error = result.error;
   } catch (err) {
     // Handle missing environment variables during build
-    if (err instanceof Error && err.message.includes('Supabase configuration is missing')) {
-      console.warn('Supabase configuration missing during build. This is expected if env vars are not set.');
+    if (
+      err instanceof Error &&
+      err.message.includes('Supabase configuration is missing')
+    ) {
+      console.warn(
+        'Supabase configuration missing during build. This is expected if env vars are not set.',
+      );
       benchmarks = [];
     } else {
       console.error('Error initializing Supabase:', err);

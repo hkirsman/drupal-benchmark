@@ -66,9 +66,15 @@ export async function POST(request) {
       );
     }
     // Handle missing Supabase configuration
-    if (err instanceof Error && err.message.includes('Supabase configuration is missing')) {
+    if (
+      err instanceof Error &&
+      err.message.includes('Supabase configuration is missing')
+    ) {
       return NextResponse.json(
-        { message: 'Server configuration error. Please contact the administrator.' },
+        {
+          message:
+            'Server configuration error. Please contact the administrator.',
+        },
         { status: 500 },
       );
     }
