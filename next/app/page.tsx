@@ -95,7 +95,7 @@ export default async function Home() {
   } catch (err) {
     // Handle missing environment variables during build / runtime configuration issues
     if (err instanceof SupabaseConfigurationError) {
-      console.warn(
+      console.error(
         'Supabase configuration missing. Benchmarks cannot be loaded until Supabase environment variables are set.',
       );
       error = new Error(
