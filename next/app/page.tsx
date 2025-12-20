@@ -93,12 +93,14 @@ export default async function Home() {
       benchmarks = result.data || [];
     }
   } catch (err) {
-    // Handle missing environment variables during build
+    // Handle missing environment variables during build / runtime configuration issues
     if (err instanceof SupabaseConfigurationError) {
       console.warn(
-        'Supabase configuration missing during build. This is expected if env vars are not set.',
+        'Supabase configuration missing. Benchmarks cannot be loaded until Supabase environment variables are set.',
       );
-      benchmarks = [];
+      error = new Error(
+        'Supabase configuration is missing. Please configure Supabase environment variables.',
+      );
     } else if (err instanceof Error) {
       // Convert caught exceptions to Error type for consistency
       console.error('Error initializing Supabase:', err);
