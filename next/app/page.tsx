@@ -12,6 +12,42 @@ import BenchmarkTable from './benchmark-table';
 export const revalidate = 300;
 // -----------------------------------------------------------------------------
 
+// Type definitions for Supabase benchmark records
+interface BenchmarkStat {
+  name: string;
+  num_requests: number;
+  total_response_time: number;
+  min_response_time: number;
+  max_response_time: number;
+}
+
+interface BenchmarkMetadata {
+  user_name?: string;
+  environment: string;
+  drupal_version: string;
+  docker_version?: string;
+  web_server?: string;
+  database?: {
+    type?: string;
+    version?: string;
+  };
+  php_version?: string;
+  computer_model?: string;
+  comment?: string;
+  system: {
+    os: string;
+    cpu: string;
+    memory: string;
+  };
+}
+
+interface BenchmarkRecord {
+  id: string;
+  created_at: string;
+  metadata: BenchmarkMetadata;
+  stats: BenchmarkStat[];
+}
+
 // The type definition remains the same
 interface ProcessedBenchmark {
   id: string;
@@ -38,8 +74,8 @@ interface ProcessedBenchmark {
 
 export default async function Home() {
   // Initialize Supabase client (lazy initialization to avoid build-time errors)
-  let benchmarks = [];
-  let error = null;
+  let benchmarks: BenchmarkRecord[] = [];
+  let error: Error | null = null;
 
   try {
     const supabase = getSupabaseClient();
