@@ -56,6 +56,7 @@ export async function POST(request) {
     }
     // Handle missing Supabase configuration
     if (err instanceof SupabaseConfigurationError) {
+      console.error('Supabase configuration error:', err);
       return NextResponse.json(
         {
           message:
