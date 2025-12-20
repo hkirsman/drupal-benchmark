@@ -31,6 +31,7 @@ interface BenchmarkMetadata {
   php_version?: string;
   computer_model?: string;
   comment?: string;
+  benchmark_version?: string;
   system: {
     os: string;
     cpu: string;
