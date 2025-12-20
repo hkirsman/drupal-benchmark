@@ -1,5 +1,8 @@
 import Image from 'next/image';
-import { getSupabaseClient } from '@/lib/supabase';
+import {
+  getSupabaseClient,
+  SupabaseConfigurationError,
+} from '@/lib/supabase';
 import BenchmarkTable from './benchmark-table';
 
 // -----------------------------------------------------------------------------
@@ -51,10 +54,7 @@ export default async function Home() {
     error = result.error;
   } catch (err) {
     // Handle missing environment variables during build
-    if (
-      err instanceof Error &&
-      err.message.includes('Supabase configuration is missing')
-    ) {
+    if (err instanceof SupabaseConfigurationError) {
       console.warn(
         'Supabase configuration missing during build. This is expected if env vars are not set.',
       );
