@@ -141,8 +141,8 @@ gather_metadata() {
   os_name=$(uname -s)
   arch=$(uname -m)
   git_commit=$(git rev-parse --short HEAD)
-  # Get benchmark version from composer.json, or fall back to commit hash
-  benchmark_version=$(jq -r '.version // empty' composer.json 2>/dev/null || echo "$git_commit")
+  # Get benchmark version from composer.json; fallback to commit hash handled below
+  benchmark_version=$(jq -r '.version // ""' composer.json 2>/dev/null)
   if [ -z "$benchmark_version" ] || [ "$benchmark_version" = "null" ]; then
     benchmark_version="$git_commit"
   fi
