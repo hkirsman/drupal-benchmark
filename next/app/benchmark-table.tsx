@@ -165,7 +165,10 @@ export default function BenchmarkTable({ data }: BenchmarkTableProps) {
                 <td className="px-3 py-2 whitespace-nowrap">{formattedDate}</td>
                 <td className="px-3 py-2 font-medium">{item.computerModel}</td>
                 <td className="px-3 py-2">{item.os}</td>
-                <td className="px-3 py-2 truncate" style={{ width: '320px' }}>
+                <td
+                  className="px-3 py-2 truncate"
+                  style={getColumnWidth('cpu')}
+                >
                   {item.cpu}
                 </td>
                 <td className="px-3 py-2">{item.memory}</td>
@@ -175,7 +178,10 @@ export default function BenchmarkTable({ data }: BenchmarkTableProps) {
                 <td className="px-3 py-2 font-mono">{item.environment}</td>
                 <td className="px-3 py-2 font-mono">{item.drupalVersion}</td>
                 <td className="px-3 py-2 font-mono">{item.webServer}</td>
-                <td className="px-3 py-2 font-mono" style={{ width: '160px' }}>
+                <td
+                  className="px-3 py-2 font-mono"
+                  style={getColumnWidth('databaseType')}
+                >
                   {item.databaseType} {item.databaseVersion}
                 </td>
                 <td className="px-3 py-2 font-mono">{item.phpVersion}</td>
