@@ -63,6 +63,7 @@ interface ProcessedBenchmark {
   phpVersion: string;
   computerModel: string;
   comment: string;
+  benchmarkVersion: string;
   numRequests: number;
   requestsPerSecond: number;
   avgResponseTime: number;
@@ -155,6 +156,7 @@ export default async function Home() {
         phpVersion: record.metadata.php_version || 'Unknown',
         computerModel: record.metadata.computer_model || 'Unknown',
         comment: record.metadata.comment || '',
+        benchmarkVersion: record.metadata.benchmark_version || 'Unknown',
         numRequests,
         requestsPerSecond: parseFloat(requestsPerSecond),
         avgResponseTime,

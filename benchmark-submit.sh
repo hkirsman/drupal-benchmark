@@ -141,6 +141,11 @@ gather_metadata() {
   os_name=$(uname -s)
   arch=$(uname -m)
   git_commit=$(git rev-parse --short HEAD)
+  # Get benchmark version from composer.json; fallback to commit hash handled below
+  benchmark_version=$(jq -r '.version // ""' composer.json 2>/dev/null)
+  if [ -z "$benchmark_version" ] || [ "$benchmark_version" = "null" ]; then
+    benchmark_version="$git_commit"
+  fi
   drupal_version=$($ENVIRONMENT drush status --field=drupal-version)
 
   # Web server detection
@@ -233,6 +238,7 @@ gather_metadata() {
     --arg environment "$environment_with_version" \
     --arg user_name "$user_name" \
     --arg git_commit "$git_commit" \
+    --arg benchmark_version "$benchmark_version" \
     --arg drupal_version "$drupal_version" \
     --arg docker_version "$docker_version" \
     --arg web_server "$web_server" \
@@ -242,7 +248,7 @@ gather_metadata() {
     --arg computer_model "$COMPUTER_MODEL" \
     --arg benchmark_comment "$BENCHMARK_COMMENT" \
     --argjson system_info "$(jq -n --arg os "$os_name" --arg arch "$arch" --arg cpu "$cpu_info" --arg mem "${total_mem_gb}GB" '{os:$os, arch:$arch, cpu:$cpu, memory:$mem}')" \
-    '{metadata: {environment:$environment, user_name:$user_name, commit:$git_commit, drupal_version:$drupal_version, docker_version:$docker_version, web_server:$web_server, database:{type:$db_type, version:$db_version}, php_version:$php_version, computer_model:$computer_model, comment:$benchmark_comment, system:$system_info}}'
+    '{metadata: {environment:$environment, user_name:$user_name, commit:$git_commit, benchmark_version:$benchmark_version, drupal_version:$drupal_version, docker_version:$docker_version, web_server:$web_server, database:{type:$db_type, version:$db_version}, php_version:$php_version, computer_model:$computer_model, comment:$benchmark_comment, system:$system_info}}'
 }
 
 echo "Preparing data for submission..."
