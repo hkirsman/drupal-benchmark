@@ -1,5 +1,5 @@
-import { createClient } from '@supabase/supabase-js';
 import Image from 'next/image';
+import { getSupabaseClient, SupabaseConfigurationError } from '@/lib/supabase';
 import BenchmarkTable from './benchmark-table';
 
 // -----------------------------------------------------------------------------
@@ -8,6 +8,43 @@ import BenchmarkTable from './benchmark-table';
 // that revalidates at most once every 300 seconds (5 minutes).
 export const revalidate = 300;
 // -----------------------------------------------------------------------------
+
+// Type definitions for Supabase benchmark records
+interface BenchmarkStat {
+  name: string;
+  num_requests: number;
+  total_response_time: number;
+  min_response_time: number;
+  max_response_time: number;
+}
+
+interface BenchmarkMetadata {
+  user_name?: string;
+  environment: string;
+  drupal_version: string;
+  docker_version?: string;
+  web_server?: string;
+  database?: {
+    type?: string;
+    version?: string;
+  };
+  php_version?: string;
+  computer_model?: string;
+  comment?: string;
+  benchmark_version?: string;
+  system: {
+    os: string;
+    cpu: string;
+    memory: string;
+  };
+}
+
+interface BenchmarkRecord {
+  id: string;
+  created_at: string;
+  metadata: BenchmarkMetadata;
+  stats: BenchmarkStat[];
+}
 
 // The type definition remains the same
 interface ProcessedBenchmark {
@@ -33,17 +70,49 @@ interface ProcessedBenchmark {
   maxResponseTime: number;
 }
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
-);
-
 export default async function Home() {
-  // REMOVE THE .context() CALL FROM THIS QUERY
-  const { data: benchmarks, error } = await supabase
-    .from('benchmarks')
-    .select('*')
-    .order('created_at', { ascending: false });
+  // Initialize Supabase client (lazy initialization to avoid build-time errors)
+  let benchmarks: BenchmarkRecord[] = [];
+  let error: Error | null = null;
+
+  try {
+    const supabase = getSupabaseClient();
+
+    // REMOVE THE .context() CALL FROM THIS QUERY
+    const result = await supabase
+      .from('benchmarks')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    // Handle Supabase query errors (result.error is a PostgrestError, not a standard Error)
+    if (result.error) {
+      error = new Error(
+        `Supabase query error: ${result.error.message || 'Unknown error'}`,
+        { cause: result.error },
+      );
+    } else {
+      benchmarks = result.data || [];
+    }
+  } catch (err) {
+    // Handle missing environment variables during build / runtime configuration issues
+    if (err instanceof SupabaseConfigurationError) {
+      console.error(
+        'Supabase configuration missing. Benchmarks cannot be loaded until Supabase environment variables are set.',
+      );
+      error = new Error(
+        'Supabase configuration is missing. Please configure Supabase environment variables.',
+        { cause: err },
+      );
+    } else if (err instanceof Error) {
+      // Store the original error directly to preserve stack trace and type information
+      console.error('Error initializing Supabase:', err);
+      error = err;
+    } else {
+      // Handle non-Error exceptions (shouldn't happen, but TypeScript requires it)
+      console.error('Unexpected error type:', err);
+      error = new Error('An unexpected error occurred', { cause: err });
+    }
+  }
 
   if (error) {
     console.error('Error fetching benchmarks:', error);
