@@ -1,14 +1,14 @@
 name: Basic
 type: profile
 description: 'Install with commonly used features pre-configured.'
-version: 9
-core_version_requirement: ^9
+version: 10
+core_version_requirement: ^10 || ^11
 install:
   - admin_toolbar_tools
   - node
   - block
   - breakpoint
-  - ckeditor
+  - ckeditor5
   - config
   - contextual
   - menu_link_content
