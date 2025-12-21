@@ -14,10 +14,10 @@ $databases['default']['default']['driver'] = 'mysql';
 
 // Lando settings.
 if (getenv('LANDO') === 'ON') {
-  $databases['default']['default']['database'] = $_ENV['DB_NAME_DRUPAL'] ?? '';
-  $databases['default']['default']['username'] = $_ENV['DB_USER_DRUPAL'] ?? '';
-  $databases['default']['default']['password'] = $_ENV['DB_PASS_DRUPAL'] ?? '';
-  $databases['default']['default']['host'] = $_ENV['DB_HOST_DRUPAL'] ?? '';
+  $databases['default']['default']['database'] = $_ENV['DB_NAME'] ?? '';
+  $databases['default']['default']['username'] = $_ENV['DB_USER'] ?? '';
+  $databases['default']['default']['password'] = $_ENV['DB_PASS'] ?? '';
+  $databases['default']['default']['host'] = $_ENV['DB_HOST'] ?? '';
 }
 
 // Salt for one-time login links, cancel links, form tokens, etc.
@@ -97,3 +97,13 @@ $ddev_settings = dirname(__FILE__) . '/settings.ddev.php';
 if (getenv('IS_DDEV_PROJECT') == 'true' && is_readable($ddev_settings)) {
   require $ddev_settings;
 }
+
+/**
+ * State caching.
+ *
+ * State caching uses the cache collector pattern to cache all requested keys
+ * from the state API in a single cache entry, which can greatly reduce the
+ * amount of database queries. However, some sites may use state with a
+ * lot of dynamic keys which could result in a very large cache.
+ */
+$settings['state_cache'] = TRUE;

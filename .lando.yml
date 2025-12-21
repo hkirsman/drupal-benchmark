@@ -1,15 +1,24 @@
 name: drupal-benchmark
-recipe: drupal9
+recipe: drupal10
 
 config:
-  php: "8.0"
+  php: "8.3"
   via: nginx
   webroot: web
   xdebug: off
   config:
     php: .lando/php.ini
+    database: .lando/my.cnf
 
 tooling:
+  composer:
+    description: "Runs Composer commands"
+    cmd:
+      - appserver: /usr/local/bin/composer
+  drupal:
+    description: "Runs Drupal core script with provided arguments"
+    cmd:
+      - appserver: /app/.lando/drupal.sh
   grumphp:
     description: "Runs grumphp commands"
     cmd:
@@ -18,7 +27,7 @@ tooling:
     description: "Runs npm commands"
     service: node
   phpunit:
-    description: Runs PHPUnit commands
+    description: "Runs PHPUnit commands"
     user: www-data
     cmd:
       - appserver: "php /app/vendor/bin/phpunit -c /app/phpunit.xml --testdox"
@@ -26,6 +35,14 @@ tooling:
     description: "Regenerates fresh PHPUnit configuration."
     cmd:
       - appserver: /app/.lando/phpunit.sh
+  syncdb:
+    description: "Synchronizes local database with remote environment"
+    cmd:
+      - appserver: /app/scripts/syncdb.sh
+  varnishadm:
+    description: "Runs varnishadm commands"
+    service: varnish
+    user: root
   xdebug:
     description: "Loads Xdebug in the selected mode"
     cmd:
@@ -33,46 +50,71 @@ tooling:
     user: root
 
 services:
-  database:
-    type: mariadb:10.3
-    # User random static high port for database connection.
-    portforward: 34567
+  adminer:
+    type: lando
+    services:
+      image: dehy/adminer
+      command: /bin/s6-svscan /etc/services.d
+    overrides:
+      volumes:
+        # Mount Adminer configuration files.
+        - ./.lando/adminer.conf:/etc/php8/php-fpm.d/www_overrides.conf
+        - ./.lando/adminer.php:/var/www/html/adminer.php
+    run_as_root:
+      - /app/.lando/adminer.sh
   appserver:
     # Install dependencies when building lando.
     build:
       - "composer install"
+    # Uncomment if you need a specific timezone for example for integrations
+    #run_as_root:
+    #  - ln -snf /usr/share/zoneinfo/Europe/Helsinki /etc/localtime
+    #  - echo "Europe/Helsinki" > /etc/timezone
+    # Uncomment this if you need to edit files inside the container
+    #build_as_root:
+    #  - apt update -y
+    #  - apt install vim -y
     overrides:
       environment:
-        HASH_SALT: notsosecurehash
+        # Database credentials are defined in the .lando/.env file
+        # to be available in both the adminer and appserver containers.
+        DRUSH_OPTIONS_URI: https://drupal-project.lndo.site
+        SMTP_ADDRESS: mailpit:1025
         ENVIRONMENT_NAME: lando
-        DB_NAME_DRUPAL: drupal9
-        DB_USER_DRUPAL: drupal9
-        DB_PASS_DRUPAL: drupal9
-        DB_HOST_DRUPAL: database
-        DRUSH_OPTIONS_URI: https://drupal-benchmark.lndo.site
+        EXEC_GRUMPHP_COMMAND: "lando php"
+        HASH_SALT: notsosecurehash
+        ELASTICSEARCH_HOST: elasticsearch
+        VARNISH_ADMIN_HOST: varnish
         # Support debugging with XDEBUG 3.
         XDEBUG_MODE:
         PHP_IDE_CONFIG: serverName=appserver
         # PHPUnit settings. @see: .lando/phpunit.sh
         MINK_DRIVER_ARGS_WEBDRIVER: '["chrome", {"browserName":"chrome","chromeOptions":{"args":["--disable-gpu","--headless"]}}, "http://chrome:9515"]'
   chrome:
-    type: compose
+    type: lando
     services:
       image: drupalci/webdriver-chromedriver:production
       command: chromedriver --log-path=/tmp/chromedriver.log --verbose --whitelisted-ips=
+  database:
+    type: "mariadb:10.6.18"
+    # Assign a static port if you need to access the database from your host machine.
+    # @see: https://docs.lando.dev/guides/external-access.html
+    # portforward: 34567
   # elasticsearch:
-  #   type: compose
+  #   type: lando
   #   services:
-  #     image: "docker.elastic.co/elasticsearch/elasticsearch:7.17.0"
+  #     image: "docker.elastic.co/elasticsearch/elasticsearch:8.10.2"
   #     command: "/bin/tini -- /usr/local/bin/docker-entrypoint.sh eswrapper"
   #     user: elasticsearch
   #     environment:
   #       ES_JAVA_OPTS: "-Xms512m -Xmx512m"
   #       discovery.type: "single-node"
   #       bootstrap.memory_lock: "true"
-  #       # Allow CORS requests.
   #       http.cors.enabled: "true"
-  #       http.cors.allow-origin: "*"
+  #       http.cors.allow-origin: "'*'"
+  #       # Disable authentication in local development
+  #       xpack.security.enabled: "false"
+  #       xpack.security.enrollment.enabled: "false"
   #     ulimits:
   #       memlock:
   #         soft: "-1"
@@ -88,25 +130,58 @@ services:
   #     esdata:
   #       driver: local
   # kibana:
-  #   type: compose
+  #   type: lando
   #   services:
-  #     image: "docker.elastic.co/kibana/kibana:7.17.0"
+  #     image: "docker.elastic.co/kibana/kibana:8.10.2"
   #     command: "/bin/tini -- /usr/local/bin/kibana-docker"
   #     user: kibana
   #     ports:
   #       - "5601:5601"
-  mailhog:
-    type: mailhog
-    hogfrom:
-      - appserver
+  mailpit:
+    type: lando
+    api: 3
+    ssl: true
+    sslExpose: false
+    services:
+      image: axllent/mailpit
+      volumes:
+       - .lando/data-mailpit:/data
+      ports:
+        - "8025"  # Web UI
+        - "1025"  # SMTP
+      environment:
+        MP_MAX_MESSAGES: 5000
+        MP_DATA_FILE: /data/mailpit.db
+        MP_SMTP_AUTH_ACCEPT_ANY: 1
+        MP_SMTP_AUTH_ALLOW_INSECURE: 1
+      command: "/mailpit"
+  node:
+    type: "node:20"
+    build:
+      - "npm install"
+  varnish:
+    type: "varnish:6"
+    backends:
+      - appserver_nginx
+    config:
+      vcl: .lando/varnish.vcl
+    ssl: true
+    overrides:
+      environment:
+        ADMIN_PORT: ":6082"
+        VARNISH_ALLOW_UNRESTRICTED_PURGE: "true"
 
 proxy:
-  mailhog:
-    - mail.lndo.site
+  adminer:
+    - adminer.drupal-project.lndo.site
+  mailpit:
+    - mail.lndo.site:8025
   # elasticsearch:
   #   - elasticsearch.lndo.site:9200
   # kibana:
   #   - kibana.lndo.site:5601
+  varnish:
+    - varnish.drupal-project.lndo.site
 
 events:
   post-start:
@@ -117,6 +192,8 @@ events:
 
 env_file:
   - .lando/.env
+  # uncomment when you need a personal .env file which is not committed to the repository
+  # - .env
 
 # Tested with Lando version
-version: v3.25.6
+version: v3.26.2
